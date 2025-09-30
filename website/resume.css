@@ -1,0 +1,93 @@
+/* Reset defaults */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  body {
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    background: #f9f9f9;
+    color: #333;
+    line-height: 1.6;
+  }
+  
+  /* Layout structure */
+  #header,
+  #footer {
+    background: #2c3e50;
+    height: 50px;
+  }
+  
+  .left,
+  .right {
+    width: 10%;
+    background: #ecf0f1;
+    float: left;
+    min-height: 100vh;
+  }
+  
+  .right {
+    float: right;
+  }
+  
+  .stuff {
+    width: 80%;
+    margin: 0 auto;
+    padding: 30px;
+    background: #fff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    min-height: calc(100vh - 100px);
+  }
+  
+  /* Headings */
+  h1 {
+    font-size: 2.2em;
+    color: #2c3e50;
+    margin-bottom: 5px;
+  }
+  
+  h2 {
+    font-size: 1.4em;
+    color: #555;
+    margin-bottom: 20px;
+    font-weight: normal;
+  }
+  
+  hr {
+    border: 0;
+    height: 1px;
+    background: #ccc;
+    margin: 15px 0;
+  }
+  
+  /* Section headers */
+  p.head {
+    font-weight: bold;
+    color: #2c3e50;
+    margin-top: 20px;
+    margin-bottom: 8px;
+    font-size: 1.1em;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  
+  /* Lists */
+  ul {
+    margin-left: 20px;
+    margin-bottom: 15px;
+  }
+  
+  ul li {
+    margin-bottom: 6px;
+  }
+  
+  /* Footer */
+  #footer {
+    clear: both;
+    text-align: center;
+    color: #fff;
+    font-size: 0.9em;
+    line-height: 50px;
+  }
+  

@@ -1,0 +1,42 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Resume website with visitor counter (S3 + API Gateway + Lambda + DynamoDB)
+
+Globals:
+  Function:
+    Timeout: 5
+    MemorySize: 128
+    Runtime: python3.9
+
+Resources:
+  ### Backend: API Gateway ###
+  VisitorApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: VisitorApi
+      StageName: prod
+      Cors:
+        AllowMethods: "'GET'"
+        AllowOrigin: "'*'"
+
+  ### Backend: Lambda ###
+  VisitorCounterFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: VisitorCounterFunction
+      CodeUri: src/visitor_counter/
+      Handler: app.lambda_handler
+      Runtime: python3.9
+      Environment:
+        Variables:
+          TABLE_NAME: VisitorCounter
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: VisitorCounter
+      Events:
+        VisitorApiEvent:
+          Type: Api
+          Properties:
+            Path: /visitor
+            Method: get
+            RestApiId: !Ref VisitorApi
