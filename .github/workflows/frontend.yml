@@ -9,20 +9,37 @@ on:
 
 jobs:
   deploy-frontend:
-    name: Sync Website to S3
+    name: Build and Sync React App to S3
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION || 'eu-north-1' }}
-      - run: |
-          aws s3 sync website/ s3://cloud-resume-challenge-petterr-n \
-            --delete \
-            --exact-timestamps
-      - env:
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install frontend dependencies
+        run: npm install
+        working-directory: website
+
+      - name: Build React app
+        run: npm run build
+        working-directory: website
+
+      - name: Sync build to S3
+        run: |
+          aws s3 sync website/dist/ s3://cloud-resume-challenge-petterr-n \
+            --delete --exact-timestamps
+
+      - name: Invalidate CloudFront cache
+        env:
           CLOUDFRONT_ID: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}
         run: |
           if [ -n "$CLOUDFRONT_ID" ]; then
