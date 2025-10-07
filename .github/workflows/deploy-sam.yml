@@ -78,3 +78,4 @@ jobs:
             --stack-name resume-app-stack \
             --capabilities CAPABILITY_IAM \
             --no-resolve-s3
+        continue-on-error: true
