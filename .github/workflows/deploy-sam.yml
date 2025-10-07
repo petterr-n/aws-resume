@@ -66,7 +66,7 @@ jobs:
           sam package \
             --template-file template.yaml \
             --output-template-file packaged.yaml \
-            --s3-bucket cloud-resume-challenge-petterr-n
+            --s3-bucket cloud-resume-challenge-petterr-n \
             --no-resolve-s3
 
       - name: Deploy SAM application
@@ -76,5 +76,5 @@ jobs:
           sam deploy \
             --template-file packaged.yaml \
             --stack-name resume-app-stack \
-            --capabilities CAPABILITY_IAM
+            --capabilities CAPABILITY_IAM \
             --no-resolve-s3
