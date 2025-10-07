@@ -26,6 +26,7 @@ def test_lambda_handler():
     # Replace app.table with mocked table
     app.table = dynamodb.Table(TABLE_NAME)
 
+
     # Call Lambda handler
     response = app.lambda_handler({}, {})
     body = response.get("body")
