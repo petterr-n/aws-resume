@@ -7,6 +7,9 @@
 # temporary files which can be created if a process still has a handle open of a deleted file
 .fuse_hidden*
 
+#AWS
+.aws-sam/
+
 # KDE directory preferences
 .directory
 
@@ -111,6 +114,7 @@ fabric.properties
 ### Python ###
 # Byte-compiled / optimized / DLL files
 __pycache__/
+__init__.py
 *.py[cod]
 *$py.class
 
