@@ -7,9 +7,9 @@ This project contains source code and supporting files for a serverless applicat
 - src/visitor_counter/app.py - Code for the application's Lambda function.
 - tests - Unit tests for the application code. 
 - template.yaml - A template that defines the application's AWS resources.
-- website/* - frontend code for the resume.
+- website/* - React-frontend code for the resume.
 
-Github actions is used for CI/CD deployment and makes it so changes are automatically applied to the AWS cloud services or to the frontend page. 
+Github actions is used for CI/CD deployment and makes it so changes are automatically applied to the AWS cloud services and the React frontend is automatically built and hosted. 
 
 The application uses several AWS resources, including Lambda functions and an API Gateway API. These resources are defined in the `template.yaml` file in this project. 
 
