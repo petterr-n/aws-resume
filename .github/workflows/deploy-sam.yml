@@ -53,24 +53,26 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION || 'us-east-1' }}
+          aws-region: ${{ secrets.AWS_REGION || 'eu-north-1' }}
 
       - name: Install AWS SAM CLI
         run: |
           pip install aws-sam-cli
 
       - name: Package SAM application
+        env:
+          SAM_CLI_TELEMETRY: 0  # disables SAM telemetry
         run: |
           sam package \
             --template-file template.yaml \
             --output-template-file packaged.yaml \
-            --s3-bucket your-deployment-bucket-name
+            --s3-bucket cloud-resume-challenge-petterr-n
 
       - name: Deploy SAM application
+        env:
+          SAM_CLI_TELEMETRY: 0
         run: |
           sam deploy \
             --template-file packaged.yaml \
-            --stack-name your-stack-name \
-            --capabilities CAPABILITY_IAM \
-            --region ${{ secrets.AWS_REGION || 'us-east-1' }} \
-            --no-fail-on-empty-changeset
+            --stack-name resume-app-stack \
+            --capabilities CAPABILITY_IAM
