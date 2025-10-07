@@ -1,7 +1,7 @@
 import sys
 import os
 import pytest
-from moto import mock_dynamodb2
+from moto import mock_dynamodb
 import boto3
 
 # Add src folder to Python path
@@ -12,7 +12,7 @@ from visitor_counter import app  # adjust this if your module is in a subfolder
 
 TABLE_NAME = "VisitorCounter"
 
-@mock_dynamodb2
+@mock_dynamodb
 def test_lambda_handler():
     # Create mocked DynamoDB resource and table
     dynamodb = boto3.resource("dynamodb", region_name="us-east-1")
