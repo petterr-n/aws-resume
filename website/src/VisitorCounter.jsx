@@ -22,7 +22,7 @@ export default function VisitorCounter() {
 
   return (
     <p id="visitorCounter">
-      Number of visitors: <span id="visitors-total">{visitorCount}</span>
+      Visitors: <span id="visitors-total">{visitorCount}</span>
     </p>
   );
 }
