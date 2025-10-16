@@ -1,50 +1,82 @@
 import React from "react";
 import VisitorCounter from "./VisitorCounter";
 import "./resume.css";
+import 'flowbite';
+import ModalUtdanning from "./components/modal-utdanning";
+import ModalEgenskaper from "./components/modal-egenskaper";
+import ModalErfaring from "./components/modal_erfaring";
 
 export default function Resume() {
-  return (
-    <div>
-      <div id="header"></div>
-      <div className="left"></div>
-      <div className="stuff">
-        <h1>Resume</h1>
-        <h2>Petter Rønning-Nyvold</h2>
-        <hr />
-        <br />
-        <p className="head">Interests</p>
-        <ul>
-        <li>Drawing</li>
-        <li>Drawing more</li>
-        <li>Drawing even more</li>
-        <li>Drawing the most</li>
-        </ul>
+    return (
+      <div className="bg-slate-400 min-h-screen p-6 flex items-center justify-center">
+        <div className="grid grid-cols-2 gap-1">
+            
+            {/* Top Row */}
+          <div className="justify-self-end min-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-700 dark:border-gray-900">
+            <img className="size-12 shrink-0" src="person-wave.svg" alt="ChitChat Logo" />
+            <div>
+              <div className="text-xl font-medium text-black dark:text-white">
+                Utdanning
+              </div>
+              <p className="text-gray-500 dark:text-gray-400">info...</p>
+              <ModalUtdanning />
+            </div>
+          </div>
+          <div className="justify-self-start min-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-700 dark:border-gray-900">
+            <img className="size-12 shrink-0" src="person-thinking.svg" alt="ChitChat Logo" />
+            <div>
+              <div className="text-xl font-medium text-black dark:text-white">
+                Erfaring
+              </div>
+              <p className="text-gray-500 dark:text-gray-400">info...</p>
+              <ModalErfaring />
+            </div>
+          </div>
 
-        <p className="head">Skills</p>
-        <ul>
-        <li>Web Design with HTML & CSS</li>
-        </ul>
+            {/* Middle Row */}
+          <div className="justify-self-end min-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-700 dark:border-gray-900">
+            <img className="size-12 shrink-0" src="person-ability.svg" alt="ChitChat Logo" />
+            <div>
+              <div className="text-xl font-medium text-black dark:text-white">
+                Egenskaper
+              </div>
+              <p className="text-gray-500 dark:text-gray-400">info...</p>
+              <ModalEgenskaper />
+            </div>
+          </div>
+          <div className="justify-self-start min-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-700 dark:border-gray-900">
+            <img className="size-12 shrink-0" src="person-ability.svg" alt="ChitChat Logo" />
+            <div>
+              <div className="text-xl font-medium text-black dark:text-white">
+                Egenskaper
+              </div>
+              <p className="text-gray-500 dark:text-gray-400">info...</p>
+              <ModalEgenskaper />
+            </div>
+          </div>
 
-        <p className="head">Education</p>
-        <ul>
-        <li>Bachelor i Informatikk - Universitetet i Tromsø</li>
-        <li>Master i Programvareutvikling - Universitetet i Bergen & Høgskulen på Vestlandet</li>
-        </ul>
-
-        <p className="head">Experience</p>
-        <ul>
-        <li>Nordlaks IT/OT - Utvikler</li>
-        </ul>
-
-        <p className="head">Extracurriculars</p>
-        <ul>
-        <li>Programstyre for Masterstudenter i Programvareutvikling</li>
-        </ul>
-
-        <VisitorCounter />
+            {/* Bottom Row */}
+          <div className="justify-self-end min-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-700 dark:border-gray-900">
+            <img className="size-12 shrink-0" src="person-ability.svg" alt="ChitChat Logo" />
+            <div>
+              <div className="text-xl font-medium text-black dark:text-white">
+                Egenskaper
+              </div>
+              <p className="text-gray-500 dark:text-gray-400">info...</p>
+              <ModalEgenskaper />
+            </div>
+          </div>
+          <div className="justify-self-start min-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-700 dark:border-gray-900">
+            <img className="size-12 shrink-0" src="person-ability.svg" alt="ChitChat Logo" />
+            <div>
+              <div className="text-xl font-medium text-black dark:text-white">
+                Egenskaper
+              </div>
+              <p className="text-gray-500 dark:text-gray-400">info...</p>
+              <ModalEgenskaper />
+            </div>
+          </div>
+        </div>
       </div>
-      <div className="right"></div>
-      <div id="footer"></div>
-    </div>
-  );
-}
+    );
+  }
