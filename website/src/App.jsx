@@ -1,13 +1,22 @@
 import React, { useState, useEffect } from "react";
 import Resume from "./Resume"; // your grid component
+import { initFlowbite } from "flowbite";
 
 export default function App() {
   const [showResume, setShowResume] = useState(false);
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
+    initFlowbite();
+  });
+
+  // Need to reinitialize flowbite because its not React-aware.
+  useEffect(() => {
     if (showResume) {
-      setTimeout(() => setVisible(true), 50);
+      setTimeout(() => {
+        setVisible(true);
+        initFlowbite();
+    }, 50);
     }
   }, [showResume]);
 
