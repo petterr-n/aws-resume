@@ -8,7 +8,7 @@ export default function Modal({ title, children, triggerText }) {
       {/* Trigger */}
       <button
         onClick={() => setOpen(true)}
-        className="px-5 py-2 bg-blue-700 text-white rounded-lg hover:bg-blue-800"
+        className="px-5 py-2 bg-gray-400 text-black rounded-lg hover:bg-gray-600"
       >
         {triggerText}
       </button>

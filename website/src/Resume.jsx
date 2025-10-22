@@ -3,6 +3,7 @@ import VisitorCounter from "./components/VisitorCounter";
 import "./resume.css";
 import 'flowbite';
 import Modal from "./components/modal";
+import ProjectSection from "./components/projects";
 
 export default function Resume() {
     return (
@@ -17,12 +18,12 @@ export default function Resume() {
                 
                 {/* Top Row */}
             <div className="justify-self-end w-sm p-6 bg-gradient-to-br from-white to-gray-50 border border-gray-200 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 dark:from-gray-800 dark:to-gray-700 dark:border-gray-900">
-                <img className="size-12 shrink-0 bg-blue-100 p-2 rounded-full mb-4" src="person-wave.svg" alt="ChitChat Logo" />
+                <img className="size-12 shrink-0 bg-blue-100 p-2 rounded-full mb-4" src="student.svg" alt="ChitChat Logo" />
                 <div>
                     <div className="text-2xl font-semibold text-gray-900 dark:text-white mb-2">
                     Utdanning
                     </div>
-                    <p className="text-gray-600 dark:text-gray-300 mb-4">info...</p>
+                    <p className="text-white mb-4">info...</p>
 
                     <Modal title="Utdanning" triggerText="Min utdanning">
                     <div className="space-y-6">
@@ -66,7 +67,7 @@ export default function Resume() {
                         <div className="text-2xl font-semibold text-gray-900 dark:text-white mb-2">
                         Egenskaper
                         </div>
-                        <p className="text-gray-600 dark:text-gray-300 mb-4">info...</p>
+                        <p className="text-white mb-4">info...</p>
 
                         <Modal title="Egenskaper" triggerText="Mine egenskaper">
                         <div className="space-y-4 text-gray-700 dark:text-gray-300">
@@ -92,7 +93,7 @@ export default function Resume() {
                         <div className="text-2xl font-semibold text-gray-900 dark:text-white mb-2">
                         Erfaring
                         </div>
-                        <p className="text-gray-600 dark:text-gray-300 mb-4">info...</p>
+                        <p className="text-white mb-4">info...</p>
 
                         <Modal title="Erfaring" triggerText="Min erfaring">
                         <div className="space-y-6">
@@ -101,7 +102,7 @@ export default function Resume() {
                                 Nordlaks – OT/IT
                             </h4>
                             <p className="text-gray-700 dark:text-gray-300 mb-2">
-                                Sortland | <span className="italic text-gray-500 dark:text-gray-400">2025</span>
+                                Stokmarknes | <span className="italic text-gray-500 dark:text-gray-400">2025</span>
                             </p>
                             <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-300">
                                 <li>Innsyn i hvordan en av Norges største oppdrettsbedrifter drives teknologisk.</li>
@@ -139,12 +140,12 @@ export default function Resume() {
                     </div>
 
                     <div className="justify-self-start w-sm p-6 bg-gradient-to-br from-yellow-700 to-orange-700 border border-yellow-700 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300">
-                    <img className="size-12 shrink-0 bg-yellow-100 p-2 rounded-full mb-4" src="person-thinking.svg" alt="ChitChat Logo" />
+                    <img className="size-12 shrink-0 bg-yellow-100 p-2 rounded-full mb-4" src="person-wave.svg" alt="ChitChat Logo" />
                     <div>
                         <div className="text-2xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-yellow-50 via-yellow-100 to-yellow-50 drop-shadow-lg mb-2">
                         Om meg
                         </div>
-                        <p className="text-gray-900 mb-4">info...</p>
+                        <p className="text-white mb-4">info...</p>
 
                         <Modal title="Om meg" triggerText="litt om meg">
                         <div className="space-y-4 text-gray-700 dark:text-gray-300">
@@ -161,10 +162,11 @@ export default function Resume() {
                         </Modal>
                     </div>
                     </div>
-
-
-
             </div>
+            <div className="flex justify-center my-10">
+                <div className="w-full h-1 bg-gray-900 rounded-full"></div>
+            </div>
+            <ProjectSection/>
         </div>
       </div>
     );
