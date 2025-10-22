@@ -7,9 +7,9 @@ export default function ProjectSection() {
       link: "https://github.com/petter/aws-resume",
     },
     {
-      title: "React Portfolio",
+      title: "Fish Watch",
       img: "/images/react-portfolio.png",
-      desc: "Responsiv portefølje bygget med Vite, React og Tailwind CSS.",
+      desc: "Masteroppgave som omhandler maskinsyn og oppdrett",
       link: "https://github.com/petter/react-portfolio",
     },
     {
@@ -21,7 +21,7 @@ export default function ProjectSection() {
   ];
 
   return (
-    <section className="p-10">
+    <section className="">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         {projects.map((proj) => (
           <div
