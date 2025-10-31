@@ -1,16 +1,19 @@
+import Modal from "./modal";
+import ResultsPanel from "./ResultsPanel";
+
 export default function ProjectSection() {
   const projects = [
     {
       title: "AWS Resume Project",
-      img: "/images/aws-resume.png",
+      img: "aws.svg",
       desc: "Et prosjekt som viser DevOps og AWS-ferdigheter.",
       link: "https://github.com/petterr-n/aws-resume",
     },
     {
       title: "Fish Watch",
-      img: "/images/react-portfolio.png",
+      img: "computer-vision.svg",
       desc: "Masteroppgave som omhandler maskinsyn og oppdrett",
-      link: "https://github.com/petter/react-portfolio",
+      link: null,
     },
   ];
 
@@ -30,6 +33,31 @@ export default function ProjectSection() {
             <div className="p-5">
               <h3 className="text-xl font-semibold text-white">{proj.title}</h3>
               <p className="text-gray-300 text-sm mt-2">{proj.desc}</p>
+
+              {proj.title === "Fish Watch" ? (
+                <Modal title="Fish Watch" triggerText="Mer info">
+                  <p>
+                    Dette prosjektet er en masteroppgave som omhandler
+                    maskinsyn og oppdrett. Den fokuserer på å bruke
+                    <strong> computer vision </strong> for å overvåke fiskens
+                    helse og bevegelse i oppdrettsanlegg.
+                  </p>
+
+                  <p className="mt-3">
+                    Det ble utviklet en løsning som kombinerer
+                    bildeanalyse og maskinlæring for å gi innsikt i
+                    fiskeatferd, med potensial for å redusere svinn og
+                    forbedre bærekraften i oppdrettsnæringen.
+                  </p>
+
+                  <img
+                    src="fishwatch-preview.jpg"
+                    alt="Fish Watch project preview"
+                    className="mt-4 rounded-lg"
+                  />
+                </Modal>
+              ) : (
+
               <a
                 href={proj.link}
                 target="_blank"
@@ -38,9 +66,11 @@ export default function ProjectSection() {
               >
                 Se prosjekt
               </a>
+              )}
             </div>
           </div>
         ))}
+        <ResultsPanel />
       </div>
     </section>
   );
