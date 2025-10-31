@@ -4,19 +4,13 @@ export default function ProjectSection() {
       title: "AWS Resume Project",
       img: "/images/aws-resume.png",
       desc: "Et prosjekt som viser DevOps og AWS-ferdigheter.",
-      link: "https://github.com/petter/aws-resume",
+      link: "https://github.com/petterr-n/aws-resume",
     },
     {
       title: "Fish Watch",
       img: "/images/react-portfolio.png",
       desc: "Masteroppgave som omhandler maskinsyn og oppdrett",
       link: "https://github.com/petter/react-portfolio",
-    },
-    {
-      title: "Automation Script",
-      img: "/images/automation.png",
-      desc: "Et Python-prosjekt som automatiserer arbeidsflyter.",
-      link: "https://github.com/petter/automation-script",
     },
   ];
 

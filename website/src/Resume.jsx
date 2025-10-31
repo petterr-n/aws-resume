@@ -76,7 +76,7 @@ export default function Resume() {
                     Jeg setter meg raskt inn i ny teknologi og motiveres av kontinuerlig læring.
                     </p>
                     <p>
-                    Jeg liker å bidra aktivt i diskusjoner og problemløsning, og setter pris på et arbeidsmiljø der man kan støtte og lære av hverandre – og ha det gøy på jobb.
+                    Jeg liker å bidra aktivt i diskusjoner og problemløsning, og setter pris på et arbeidsmiljø der man kan støtte og lære av hverandre, og ha det gøy på jobb.
                     </p>
                 </ExpandableCard>
 
@@ -87,7 +87,7 @@ export default function Resume() {
                     gradient="bg-gradient-to-br from-blue-800 to-blue-700 border-blue-900"
                 >
                     <div>
-                    <h4 className="font-semibold text-white mb-1">Nordlaks – OT/IT</h4>
+                    <h4 className="font-semibold text-white mb-1">Nordlaks OT/IT – Utvikler</h4>
                     <p className="text-gray-200 mb-2">
                         Stokmarknes | <span className="italic text-gray-400">2025</span>
                     </p>
@@ -126,13 +126,10 @@ export default function Resume() {
                     gradient="bg-gradient-to-br from-yellow-700 to-orange-700 border-yellow-700"
                 >
                     <p>
-                    Jeg trives godt i team og ser verdien av samarbeid for å finne gode løsninger.
+                    Jeg er 26 år gammel og kommer fra en liten plass som heter Stokmarknes i Nordland, Nord-Norge.
                     </p>
                     <p>
-                    Jeg setter meg raskt inn i ny teknologi og motiveres av kontinuerlig læring.
-                    </p>
-                    <p>
-                    Jeg liker å bidra aktivt i diskusjoner og problemløsning, og setter pris på et arbeidsmiljø der man kan støtte og lære av hverandre – og ha det gøy på jobb.
+                    Er aktiv på fritiden, og interesserer meg for fotball og Formel 1. Liverpool er favorittlaget, også følger jeg mest med på Bodø/Glimt når det kommer til norsk fotball.
                     </p>
                 </ExpandableCard>
                 </div>
