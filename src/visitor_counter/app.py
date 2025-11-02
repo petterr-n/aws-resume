@@ -12,16 +12,13 @@ def lambda_handler(event, context):
     print("Received path:", path)
 
     try:
-        if path.endswith("/visitor"):
-            # Visitor counter
+        if "/visitor" in path:
+            # Visitor counter logic
             response = table.update_item(
                 Key={'id': 'visitor-counter'},
                 UpdateExpression="SET #c = if_not_exists(#c, :start_val) + :inc_val",
                 ExpressionAttributeNames={'#c': 'count'},
-                ExpressionAttributeValues={
-                    ':inc_val': 1,
-                    ':start_val': 0
-                },
+                ExpressionAttributeValues={':inc_val': 1, ':start_val': 0},
                 ReturnValues="UPDATED_NEW"
             )
             body = {"count": int(response['Attributes']['count'])}
