@@ -42,7 +42,7 @@ def lambda_handler(event, context):
 
         elif path.endswith("/football"):
             try:
-                football_url = "https://api.football-data.org/v4/matches"
+                football_url = "https://api.football-data.org/v4/matches?competitions=PL&status=FINISHED"
                 headers = {"X-Auth-Token": os.environ.get("FOOTBALL_API_KEY")}
                 res = http.request("GET", football_url, headers=headers, timeout=5.0)
                 if res.status != 200:

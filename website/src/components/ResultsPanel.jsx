@@ -17,8 +17,8 @@ export default function ResultsPanel() {
         // Find latest Liverpool match
         const latestMatch = data.matches?.find(
           (m) =>
-            m.homeTeam?.name.toLowerCase().includes("liverpool") ||
-            m.awayTeam?.name.toLowerCase().includes("liverpool")
+            m.homeTeam?.name.toLowerCase().includes("manchester city") ||
+            m.awayTeam?.name.toLowerCase().includes("manchester city")
         );
 
         if (latestMatch) {
