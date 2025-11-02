@@ -44,7 +44,7 @@ def lambda_handler(event, context):
             try:
                 football_url = "https://api.football-data.org/v4/matches?competitions=PL&status=FINISHED"
                 headers = {"X-Auth-Token": os.environ.get("FOOTBALL_API_KEY")}
-                res = http.request("GET", football_url, headers=headers, timeout=5.0)
+                res = http.request("GET", football_url, headers=headers, timeout=20.0)
                 if res.status != 200:
                     body = {"error": f"Football API returned {res.status}"}
                 else:
