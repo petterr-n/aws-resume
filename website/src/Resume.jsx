@@ -70,13 +70,13 @@ export default function Resume() {
                     gradient="bg-gradient-to-br from-purple-900 to-purple-700 border-purple-900"
                 >
                     <p>
-                    Jeg trives godt i team og ser verdien av samarbeid for å finne gode løsninger.
+                    Jeg trives godt i team og ser verdien av samarbeid for å finne gode løsninger, men jeg trives også med selvstendig arbeid som man virkelig må sette seg inn i.
                     </p>
                     <p>
-                    Jeg setter meg raskt inn i ny teknologi og motiveres av kontinuerlig læring.
+                    Jeg setter meg raskt inn i ny teknologi og motiveres av å møte på utfordringer som tvinger meg til å fortsette å tilegne meg kunnskap.
                     </p>
                     <p>
-                    Jeg liker å bidra aktivt i diskusjoner og problemløsning, og setter pris på et arbeidsmiljø der man kan støtte og lære av hverandre, og ha det gøy på jobb.
+                    Jeg liker å bidra aktivt i diskusjoner og problemløsning, og setter pris på et arbeidsmiljø der man kan både diskutere, støtte, og lære av hverandre, men også ha det gøy på jobb.
                     </p>
                 </ExpandableCard>
 
@@ -94,6 +94,15 @@ export default function Resume() {
                     <ul className="list-disc list-inside space-y-1 text-gray-300">
                         <li>Innsyn i hvordan en av Norges største oppdrettsbedrifter drives teknologisk.</li>
                         <li>Erfaring med maskinsyn, kommunikasjon mellom operasjonssentral og røktere, samt IT- og OT-systemer.</li>
+                    </ul>
+                    </div>
+
+                    <div>
+                    <h4 className="font-semibold text-white mb-1">Prosjekter</h4>
+                    <ul className="list-disc list-inside space-y-1 text-gray-300">
+                        <li><span className="font-semibold text-white">Frontendutvikling</span> med React, Tailwind CSS, HTML, Javascript, med mer.</li>
+                        <li><span className="font-semibold text-white">Backendutvikling</span>  med Java, Kotlin, Python, Rest API, Messenger-services, Postgres, MongoDB, SQL, Spring-Boot, Django, med mer.</li>
+                        <li><span className="font-semibold text-white">Skyutvikling</span>  med AWS services som Lambda, DynamoDB, CloudFront, SAM, IaC, med mer.</li>
                     </ul>
                     </div>
 
