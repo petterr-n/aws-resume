@@ -33,7 +33,7 @@ export default function ResultsPanel() {
           setLiverpool({ error: "Kommer senere..." });
         }
       })
-      .catch(() => setLiverpool({ error: "Kunne ikke hente Liverpool-kamper" }));
+      .catch(() => setLiverpool({ error: "Kommer senere..." }));
   }, []);
 
   // Fetch F1 result from Lambda
@@ -54,7 +54,7 @@ export default function ResultsPanel() {
               team: winner.Constructor.name,
             });
           } else {
-            setF1({ error: "Ingen F1-resultater funnet" });
+            setF1({ error: "Kommer senere..." });
           }
         }
       })
