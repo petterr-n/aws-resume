@@ -30,7 +30,7 @@ export default function ResultsPanel() {
             date: latestMatch.utcDate,
           });
         } else {
-          setLiverpool({ error: "Ingen Liverpool-kamper funnet" });
+          setLiverpool({ error: "Kommer senere..." });
         }
       })
       .catch(() => setLiverpool({ error: "Kunne ikke hente Liverpool-kamper" }));
@@ -60,7 +60,7 @@ export default function ResultsPanel() {
       })
       .catch((err) => {
         console.error(err);
-        setF1({ error: "Kunne ikke hente F1-data" });
+        setF1({ error: "Kommer senere..." });
       });
   }, []);
 
