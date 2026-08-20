@@ -1,0 +1,7 @@
+# Local development and CI only. Neither Lambda function has runtime
+# dependencies — both use boto3 (provided by the runtime) and the standard
+# library, so there is nothing to package.
+boto3
+pytest
+moto[dynamodb]
+cfn-lint
