@@ -1,42 +1,214 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Description: Resume website with visitor counter (S3 + API Gateway + Lambda + DynamoDB)
+Description: >
+  petter-rn.no backend. HTTP API in front of two single-purpose Lambdas and a
+  DynamoDB counter table. Every resource the application needs is defined here —
+  nothing is created by hand, so the stack can be deleted and redeployed.
+
+Parameters:
+  FootballApiKeyParameter:
+    Type: String
+    Default: /petter-rn/football-api-key
+    Description: >
+      SSM SecureString holding the football-data.org key. Read at runtime rather
+      than injected as an environment variable: CloudFormation cannot resolve
+      ssm-secure into Lambda env vars, and this way the secret never appears in
+      the function configuration and can be rotated without a redeploy.
+
+  AllowedOrigins:
+    Type: CommaDelimitedList
+    Default: 'https://petter-rn.no,https://www.petter-rn.no,http://localhost:5173'
+    Description: >
+      Browser origins permitted to call the API. Replaces the previous
+      Allow-Origin '*'. Once the API is served from /api/* on the same
+      CloudFront distribution as the site, calls become same-origin and this
+      whole CORS block can be deleted.
+
+  AlertEmail:
+    Type: String
+    Default: ''
+    Description: >
+      Optional. If set, receives an email when a function starts erroring.
+      AWS sends a confirmation link that must be clicked before it works.
+
+Conditions:
+  HasAlertEmail: !Not [!Equals [!Ref AlertEmail, '']]
 
 Globals:
   Function:
-    Timeout: 5
-    MemorySize: 128
-    Runtime: python3.9
+    Runtime: python3.13
+    Architectures: [arm64]          # ~20% cheaper per GB-second than x86_64
+    Timeout: 10
+    MemorySize: 256
+    Tracing: Active                 # X-Ray: 100k traces/month free
+    Environment:
+      Variables:
+        POWERTOOLS_SERVICE_NAME: resume-api
+        LOG_LEVEL: INFO
 
 Resources:
-  ### Backend: API Gateway ###
-  VisitorApi:
-    Type: AWS::Serverless::Api
-    Properties:
-      Name: VisitorApi
-      StageName: prod
-      Cors:
-        AllowMethods: "'GET'"
-        AllowOrigin: "'*'"
 
-  ### Backend: Lambda ###
-  VisitorCounterFunction:
+  ### API ###############################################################
+
+  # HTTP API rather than REST: same features here at $1.00/M instead of
+  # $3.50/M, and it sends payload format 2.0, which is what the handlers parse.
+  HttpApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      StageName: prod
+      CorsConfiguration:
+        AllowOrigins: !Ref AllowedOrigins
+        AllowMethods: [GET, OPTIONS]
+        AllowHeaders: [Content-Type]
+        MaxAge: 600
+      # Throttling is the cheapest possible guard against someone deciding to
+      # hammer the counter. Well above real traffic, well below a surprise bill.
+      DefaultRouteSettings:
+        ThrottlingBurstLimit: 20
+        ThrottlingRateLimit: 10
+
+  ### Data ##############################################################
+
+  VisitorTable:
+    Type: AWS::DynamoDB::Table
+    # Retained on stack delete so an accidental teardown cannot silently
+    # discard the count. Delete it explicitly when you actually mean to.
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+
+  ### Functions #########################################################
+
+  # Two functions rather than one dispatcher: this one can write to DynamoDB
+  # and reach nothing else; the sports one can read SSM and reach nothing else.
+  # Neither can do the other's job if it is compromised.
+  VisitorFunction:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: VisitorCounterFunction
-      CodeUri: src/visitor_counter/
+      CodeUri: src/visitor/
       Handler: app.lambda_handler
-      Runtime: python3.9
+      Description: Increments and returns the visitor count.
       Environment:
         Variables:
-          TABLE_NAME: VisitorCounter
+          TABLE_NAME: !Ref VisitorTable
       Policies:
         - DynamoDBCrudPolicy:
-            TableName: VisitorCounter
+            TableName: !Ref VisitorTable
       Events:
-        VisitorApiEvent:
-          Type: Api
+        GetVisitor:
+          Type: HttpApi
           Properties:
+            ApiId: !Ref HttpApi
             Path: /visitor
-            Method: get
-            RestApiId: !Ref VisitorApi
+            Method: GET
+
+  SportsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/sports/
+      Handler: app.lambda_handler
+      Description: Proxies the F1 and Premier League result feeds.
+      Environment:
+        Variables:
+          FOOTBALL_API_KEY_PARAMETER: !Ref FootballApiKeyParameter
+      Policies:
+        - SSMParameterReadPolicy:
+            ParameterName: petter-rn/football-api-key
+      Events:
+        GetF1:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Path: /f1
+            Method: GET
+        GetFootball:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Path: /football
+            Method: GET
+
+  ### Log retention #####################################################
+
+  # Without these, log groups are created with retention "never expire" and
+  # CloudWatch storage costs grow forever.
+  VisitorLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/aws/lambda/${VisitorFunction}'
+      RetentionInDays: 30
+
+  SportsLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/aws/lambda/${SportsFunction}'
+      RetentionInDays: 30
+
+  ### Alerting ##########################################################
+
+  AlertTopic:
+    Type: AWS::SNS::Topic
+    Condition: HasAlertEmail
+    Properties:
+      DisplayName: resume-api alerts
+      Subscription:
+        - Protocol: email
+          Endpoint: !Ref AlertEmail
+
+  # This is the alarm that would have told you the API was down instead of
+  # letting it return errors unnoticed.
+  FunctionErrorAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Condition: HasAlertEmail
+    Properties:
+      AlarmDescription: A resume-api Lambda is returning errors.
+      Namespace: AWS/Lambda
+      MetricName: Errors
+      Statistic: Sum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      TreatMissingData: notBreaching
+      AlarmActions: [!Ref AlertTopic]
+      Dimensions:
+        - Name: FunctionName
+          Value: !Ref VisitorFunction
+
+  ApiErrorAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Condition: HasAlertEmail
+    Properties:
+      AlarmDescription: The HTTP API is returning 5xx responses.
+      Namespace: AWS/ApiGateway
+      MetricName: 5xx
+      Statistic: Sum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      TreatMissingData: notBreaching
+      AlarmActions: [!Ref AlertTopic]
+      Dimensions:
+        - Name: ApiId
+          Value: !Ref HttpApi
+
+Outputs:
+  ApiBaseUrl:
+    Description: Base URL for the API. Becomes the CloudFront /api/* origin.
+    Value: !Sub 'https://${HttpApi}.execute-api.${AWS::Region}.amazonaws.com/prod'
+
+  ApiOriginDomain:
+    Description: Hostname only — this is what you enter as a CloudFront origin.
+    Value: !Sub '${HttpApi}.execute-api.${AWS::Region}.amazonaws.com'
+
+  VisitorTableName:
+    Description: Generated table name. Nothing hardcodes this.
+    Value: !Ref VisitorTable
