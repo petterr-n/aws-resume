@@ -1,4 +1,4 @@
-# resume-app
+# Resume Website
 
 ## Resume available at: https://petter-rn.no
 
