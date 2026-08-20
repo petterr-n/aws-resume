@@ -1,0 +1,143 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >
+  Site bucket and CloudFront distribution for petter-rn.no.
+
+  These resources were created by hand before this template existed. They are
+  adopted with a CloudFormation *resource import* rather than recreated —
+  recreating the distribution would mean releasing the petter-rn.no alias,
+  waiting out a new deployment, and taking the site down for no benefit.
+
+  IMPORTANT: on the initial import this template must describe the resources
+  EXACTLY as they exist. Any difference is applied as a change on the next
+  stack update, which is how an import turns into an outage. Property values
+  below were read from the live resources, not chosen. See IMPORTING.md.
+
+Parameters:
+  SiteBucketName:
+    Type: String
+    Default: cloud-resume-challenge-petterr-n
+
+  CertificateArn:
+    Type: String
+    Default: arn:aws:acm:us-east-1:522783346722:certificate/f762271f-acb5-496f-9d5c-72a9e4fad02a
+    Description: >
+      Passed as a parameter rather than managed here. CloudFront certificates
+      must live in us-east-1 while this stack is in eu-north-1, so the resource
+      cannot belong to this stack.
+
+  OriginAccessControlId:
+    Type: String
+    Default: E13FF2VGWEMSJL
+    Description: >
+      Existing OAC, already attached to the distribution and already reflected
+      in the bucket policy. Referenced by id so the import does not try to
+      create a second one.
+
+Resources:
+
+  # DeletionPolicy: Retain is mandatory on every resource in an import
+  # operation. It also means deleting this stack detaches these resources
+  # rather than destroying the site.
+  SiteBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      BucketName: !Ref SiteBucketName
+      # Currently all four are false on the live bucket. Turning them on is a
+      # deliberate follow-up change, applied AFTER the import succeeds — not
+      # part of the import itself. The OAC bucket policy is not evaluated as
+      # a public policy, so enabling these does not break CloudFront access.
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: false
+        BlockPublicPolicy: false
+        IgnorePublicAcls: false
+        RestrictPublicBuckets: false
+
+  SiteBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      Bucket: !Ref SiteBucket
+      PolicyDocument:
+        Version: '2008-10-17'
+        Id: PolicyForCloudFrontPrivateContent
+        Statement:
+          - Sid: AllowCloudFrontServicePrincipal
+            Effect: Allow
+            Principal:
+              Service: cloudfront.amazonaws.com
+            Action: s3:GetObject
+            Resource: !Sub 'arn:aws:s3:::${SiteBucketName}/*'
+            Condition:
+              StringEquals:
+                AWS:SourceArn: !Sub 'arn:aws:cloudfront::${AWS::AccountId}:distribution/${Distribution}'
+
+  Distribution:
+    Type: AWS::CloudFront::Distribution
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      DistributionConfig:
+        Enabled: true
+        Comment: ''
+        Aliases:
+          - petter-rn.no
+        DefaultRootObject: index.html
+        PriceClass: PriceClass_All
+        HttpVersion: http1.1        # see IMPROVEMENTS below
+        IPV6Enabled: false          # see IMPROVEMENTS below
+
+        Origins:
+          - Id: s3-origin-cloud-resume-challenge-petterr-n
+            DomainName: !Sub '${SiteBucketName}.s3.eu-north-1.amazonaws.com'
+            OriginAccessControlId: !Ref OriginAccessControlId
+            S3OriginConfig:
+              OriginAccessIdentity: ''
+
+        DefaultCacheBehavior:
+          TargetOriginId: s3-origin-cloud-resume-challenge-petterr-n
+          ViewerProtocolPolicy: redirect-to-https
+          AllowedMethods: [HEAD, GET]
+          CachedMethods: [HEAD, GET]
+          Compress: true
+          ForwardedValues:
+            QueryString: false
+            Cookies:
+              Forward: none
+
+        CustomErrorResponses:
+          - ErrorCode: 403
+            ResponseCode: 404
+            ResponsePagePath: /error.html
+          - ErrorCode: 404
+            ResponseCode: 404
+            ResponsePagePath: /error.html
+
+        ViewerCertificate:
+          AcmCertificateArn: !Ref CertificateArn
+          SslSupportMethod: sni-only
+          MinimumProtocolVersion: TLSv1.2_2021
+
+Outputs:
+  DistributionId:
+    Value: !Ref Distribution
+  DistributionDomain:
+    Value: !GetAtt Distribution.DomainName
+  SiteBucket:
+    Value: !Ref SiteBucket
+
+# IMPROVEMENTS to apply as normal stack updates once the import is verified:
+#
+#   HttpVersion: http2and3     currently http1.1 — measurably faster, free
+#   IPV6Enabled: true          currently off, free
+#   CachePolicyId              replace the deprecated ForwardedValues block
+#                              with the managed CachingOptimized policy
+#   PublicAccessBlock          set all four to true
+#   PriceClass_100             US/EU only; cheaper, though the free tier
+#                              already covers this site's volume
+#
+# And the Phase 2 change this whole import unblocks: a second origin pointing
+# at the HTTP API with an /api/* cache behaviour, which makes the API
+# same-origin and lets the CORS block come out of template.yaml.
