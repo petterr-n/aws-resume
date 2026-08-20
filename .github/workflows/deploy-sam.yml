@@ -89,6 +89,16 @@ jobs:
         # silently ignoring it is how the stack drifted from the template.
         # --no-fail-on-empty-changeset keeps genuine no-op deploys green.
         run: |
+          # AlertEmail is optional, but `--parameter-overrides AlertEmail=`
+          # with an empty value is a parse error rather than an empty string,
+          # so the flag has to be omitted entirely when it is unset.
+          overrides=()
+          if [ -n "${{ vars.ALERT_EMAIL }}" ]; then
+            overrides=(--parameter-overrides "AlertEmail=${{ vars.ALERT_EMAIL }}")
+          else
+            echo "::notice::ALERT_EMAIL not set — deploying without error alarms."
+          fi
+
           sam deploy \
             --stack-name "$STACK_NAME" \
             --s3-bucket "$ARTIFACTS_BUCKET" \
@@ -96,7 +106,7 @@ jobs:
             --no-confirm-changeset \
             --no-fail-on-empty-changeset \
             --no-resolve-s3 \
-            --parameter-overrides AlertEmail="${{ vars.ALERT_EMAIL }}"
+            "${overrides[@]}"
 
       - name: Smoke test the deployed endpoint
         run: |
