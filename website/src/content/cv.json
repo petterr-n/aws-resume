@@ -1,0 +1,114 @@
+{
+  "name": "Petter Rønning-Nyvold",
+  "photo": "profile.webp",
+  "tagline": "Les litt om meg, min utdanning, min erfaring og noen av mine prosjekter.",
+  "sections": [
+    {
+      "id": "utdanning",
+      "title": "Utdanning",
+      "icon": "student.svg",
+      "gradient": "bg-gradient-to-br from-gray-800 to-gray-700 border-gray-900",
+      "entries": [
+        {
+          "heading": "Master i programvareutvikling",
+          "org": "Universitetet i Bergen og Høgskulen på Vestlandet",
+          "period": "2024 – 2026",
+          "bullets": [
+            "Fokus på moderne programvareutvikling, maskinsyn og AI.",
+            "Masterprosjekt: FishWatch – utviklet system for å detektere individuelle laks i merder og visualisere bevegelsesmønstre."
+          ]
+        },
+        {
+          "heading": "Bachelor i Informatikk",
+          "org": "Universitetet i Tromsø",
+          "period": "2020 – 2024",
+          "bullets": [
+            "Grunnleggende programmering, algoritmer og systemutvikling.",
+            "Prosjekter i Kotlin, Java, Python og C."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "egenskaper",
+      "title": "Egenskaper",
+      "icon": "person-thinking.svg",
+      "gradient": "bg-gradient-to-br from-purple-900 to-purple-700 border-purple-900",
+      "paragraphs": [
+        "Jeg trives godt i team og ser verdien av samarbeid for å finne gode løsninger, men jeg trives også med selvstendig arbeid som man virkelig må sette seg inn i.",
+        "Jeg setter meg raskt inn i ny teknologi og motiveres av å møte på utfordringer som tvinger meg til å fortsette å tilegne meg kunnskap.",
+        "Jeg liker å bidra aktivt i diskusjoner og problemløsning, og setter pris på et arbeidsmiljø der man kan både diskutere, støtte, og lære av hverandre, men også ha det gøy på jobb."
+      ]
+    },
+    {
+      "id": "erfaring",
+      "title": "Erfaring",
+      "icon": "person-ability.svg",
+      "gradient": "bg-gradient-to-br from-blue-800 to-blue-700 border-blue-900",
+      "entries": [
+        {
+          "heading": "Nordlaks OT/IT – Utvikler",
+          "org": "Stokmarknes",
+          "period": "2025",
+          "bullets": [
+            "Innsyn i hvordan en av Norges største oppdrettsbedrifter drives teknologisk.",
+            "Erfaring med maskinsyn, kommunikasjon mellom operasjonssentral og røktere, samt IT- og OT-systemer."
+          ]
+        },
+        {
+          "heading": "Prosjekter",
+          "bullets": [
+            "Frontendutvikling med React, Tailwind CSS, HTML, Javascript, med mer.",
+            "Backendutvikling med Java, Kotlin, Python, Rest API, Messenger-services, Postgres, MongoDB, SQL, Spring-Boot, Django, med mer.",
+            "Skyutvikling med AWS services som Lambda, DynamoDB, CloudFront, SAM, IaC, med mer."
+          ]
+        },
+        {
+          "heading": "Stokmarknes Sykehus – Sjåfør",
+          "period": "2019 – 2024",
+          "bullets": [
+            "Sommer- og feriejobb.",
+            "Ansvar for logistikk og pasienttransport under tidspress med høy grad av service."
+          ]
+        },
+        {
+          "heading": "Circle K Stokmarknes – Deltidsjobb",
+          "period": "2015 – 2018",
+          "bullets": [
+            "Kundebehandling, salg og drift i et hektisk miljø."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "om-meg",
+      "title": "Om meg",
+      "icon": "person-wave.svg",
+      "gradient": "bg-gradient-to-br from-yellow-700 to-orange-700 border-yellow-700",
+      "paragraphs": [
+        "Jeg er 26 år gammel og kommer fra en liten plass som heter Stokmarknes i Nordland, Nord-Norge.",
+        "Er aktiv på fritiden, og interesserer meg for fotball og Formel 1. Liverpool er favorittlaget, også følger jeg mest med på Bodø/Glimt når det kommer til norsk fotball."
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "id": "aws-resume",
+      "title": "AWS Resume Project",
+      "image": "aws.svg",
+      "description": "Et prosjekt som viser DevOps og AWS-ferdigheter.",
+      "link": "https://github.com/petterr-n/aws-resume"
+    },
+    {
+      "id": "fish-watch",
+      "title": "Fish Watch",
+      "image": "computer-vision.svg",
+      "description": "Masteroppgave som omhandler maskinsyn og oppdrett.",
+      "link": null,
+      "details": [
+        "Dette prosjektet er en masteroppgave som omhandler maskinsyn og oppdrett. Den fokuserer på å bruke computer vision for å overvåke fiskens helse og bevegelse i oppdrettsanlegg.",
+        "Det ble utviklet en løsning som kombinerer bildeanalyse og maskinlæring for å gi innsikt i fiskeatferd, med potensial for å redusere svinn og forbedre bærekraften i oppdrettsnæringen."
+      ]
+    }
+  ]
+}
