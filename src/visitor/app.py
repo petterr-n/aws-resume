@@ -24,7 +24,12 @@ _table = boto3.resource("dynamodb").Table(TABLE_NAME)
 def _response(status, body):
     return {
         "statusCode": status,
-        "headers": {"Content-Type": "application/json"},
+        "headers": {
+            "Content-Type": "application/json",
+            # This endpoint mutates on every call. Behind CloudFront a cached
+            # response would freeze the count and skip the increment entirely.
+            "Cache-Control": "no-store",
+        },
         "body": json.dumps(body),
     }
 

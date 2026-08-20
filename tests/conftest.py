@@ -10,12 +10,12 @@ ROOT = Path(__file__).resolve().parent.parent
 def load_handler(alias, package):
     """Load src/<package>/app.py as a fresh module named <alias>.
 
-    Both functions are packaged as `app.py`, so putting their directories on
-    sys.path makes them collide in sys.modules — whichever imports first wins
-    and the other test module silently gets the wrong handler. Loading from an
-    explicit file path under a distinct alias keeps them separate, and
-    re-executing gives each test a clean module-level state (the cached
-    DynamoDB table handle, the cached SSM parameter).
+    Every function is packaged as `app.py`, so once there is more than one,
+    putting their directories on sys.path makes them collide in sys.modules —
+    whichever imports first wins and the other test module silently gets the
+    wrong handler. Loading from an explicit file path under a distinct alias
+    keeps them separate, and re-executing gives each test clean module-level
+    state (notably the cached DynamoDB table handle).
     """
     path = ROOT / "src" / package / "app.py"
     spec = importlib.util.spec_from_file_location(alias, path)
@@ -33,7 +33,6 @@ def aws_env(monkeypatch):
     monkeypatch.setenv("AWS_SESSION_TOKEN", "testing")
     monkeypatch.setenv("AWS_DEFAULT_REGION", "eu-north-1")
     monkeypatch.setenv("TABLE_NAME", "test-visitors")
-    monkeypatch.setenv("FOOTBALL_API_KEY_PARAMETER", "/petter-rn/football-api-key")
 
 
 def http_event(route_key, path=None):

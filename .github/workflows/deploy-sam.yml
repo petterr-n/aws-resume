@@ -95,21 +95,25 @@ jobs:
             --no-resolve-s3 \
             --parameter-overrides AlertEmail="${{ vars.ALERT_EMAIL }}"
 
-      - name: Smoke test the deployed endpoints
+      - name: Smoke test the deployed endpoint
         run: |
           BASE=$(aws cloudformation describe-stacks \
             --stack-name "$STACK_NAME" \
             --query 'Stacks[0].Outputs[?OutputKey==`ApiBaseUrl`].OutputValue' \
             --output text)
-          echo "Testing $BASE"
 
-          fail=0
-          for path in visitor f1 football; do
-            code=$(curl -s -o /tmp/body -w '%{http_code}' --max-time 20 "$BASE/$path")
-            echo "  /$path -> $code $(head -c 120 /tmp/body)"
-            # 5xx means our code broke. A 502/504 from the sports routes means
-            # an upstream feed is down, which is not our deploy's fault.
-            if [ "$code" -ge 500 ] && [ "$path" = "visitor" ]; then fail=1; fi
-            if [ "$code" = "500" ]; then fail=1; fi
-          done
-          exit $fail
+          code=$(curl -s -o /tmp/body -w '%{http_code}' --max-time 20 "$BASE/visitor")
+          body=$(cat /tmp/body)
+          echo "GET $BASE/visitor -> $code $body"
+
+          if [ "$code" != "200" ]; then
+            echo "::error::Expected 200, got $code"
+            exit 1
+          fi
+
+          # The old failure mode returned 200 with an error body, so status
+          # alone is not enough — require an actual integer count.
+          echo "$body" | grep -Eq '"count"[[:space:]]*:[[:space:]]*[0-9]+' || {
+            echo "::error::Response has no numeric count field"
+            exit 1
+          }

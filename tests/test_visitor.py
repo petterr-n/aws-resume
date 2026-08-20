@@ -41,6 +41,15 @@ def test_returns_json_content_type(visitor_app):
     assert response["headers"]["Content-Type"] == "application/json"
 
 
+def test_response_is_never_cacheable(visitor_app):
+    """The count increments per call, so a cached response would freeze it.
+
+    Matters from Phase 2, when this sits behind CloudFront on /api/*.
+    """
+    headers = visitor_app.lambda_handler(http_event("GET /visitor"), None)["headers"]
+    assert headers["Cache-Control"] == "no-store"
+
+
 def test_no_cors_headers_from_the_function(visitor_app):
     """CORS belongs to the API, not to every handler.
 
