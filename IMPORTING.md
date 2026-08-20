@@ -30,6 +30,10 @@ Every resource also needs `DeletionPolicy: Retain`, which CloudFormation
 requires for import. A useful side effect: deleting this stack detaches these
 resources instead of destroying the site.
 
+An import template also cannot contain an `Outputs` section — CloudFormation
+rejects the change set with "you cannot modify or add [Outputs]". Add outputs
+in the first ordinary update after the import completes.
+
 ## Running the import
 
 ```bash
@@ -80,7 +84,11 @@ aws cloudformation describe-stack-resource-drifts \
   --output table
 ```
 
-Expected: every resource `IN_SYNC`.
+Expected: every resource `IN_SYNC`. Note that `AWS::S3::BucketPolicy` does not
+support drift detection, so it will not appear in the results at all — that is
+a gap in CloudFormation, not a failed import.
+
+Result of the 2026-08-20 import: `Distribution` and `SiteBucket` both `IN_SYNC`.
 
 ## Deploy permissions
 

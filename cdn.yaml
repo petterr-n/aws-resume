@@ -120,13 +120,14 @@ Resources:
           SslSupportMethod: sni-only
           MinimumProtocolVersion: TLSv1.2_2021
 
-Outputs:
-  DistributionId:
-    Value: !Ref Distribution
-  DistributionDomain:
-    Value: !GetAtt Distribution.DomainName
-  SiteBucket:
-    Value: !Ref SiteBucket
+# NOTE: an import change set rejects any template containing Outputs
+# ("you cannot modify or add [Outputs]"). They are added in the first ordinary
+# stack update after the import completes, alongside the improvements below.
+#
+# Outputs:
+#   DistributionId:     !Ref Distribution
+#   DistributionDomain: !GetAtt Distribution.DomainName
+#   SiteBucket:         !Ref SiteBucket
 
 # IMPROVEMENTS to apply as normal stack updates once the import is verified:
 #
