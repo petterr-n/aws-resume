@@ -39,6 +39,9 @@ jobs:
         with:
           python-version: '3.13'
           cache: pip
+          # setup-python only looks for requirements.txt / pyproject.toml by
+          # default and fails the step outright when it finds neither.
+          cache-dependency-path: requirements-dev.txt
 
       - run: pip install -r requirements-dev.txt
 
