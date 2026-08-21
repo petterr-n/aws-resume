@@ -1,4 +1,5 @@
 import { ArrowDown, Github, MapPin } from "lucide-react";
+import AskBox from "./AskBox";
 import cv from "../content/cv.json";
 
 const ICONS = { github: Github };
@@ -76,6 +77,10 @@ export default function Hero() {
             />
           </div>
         </div>
+      </div>
+
+      <div className="mx-auto max-w-5xl px-5 pb-10 sm:px-8 sm:pb-12">
+        <AskBox />
       </div>
 
       {/* Three facts, scannable in a couple of seconds without opening anything. */}
