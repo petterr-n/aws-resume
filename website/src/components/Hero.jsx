@@ -79,12 +79,8 @@ export default function Hero() {
         </div>
       </div>
 
-      <div className="mx-auto max-w-5xl px-5 pb-10 sm:px-8 sm:pb-12">
-        <AskBox />
-      </div>
-
       {/* Three facts, scannable in a couple of seconds without opening anything. */}
-      <div className="mx-auto max-w-5xl px-5 pb-12 sm:px-8 sm:pb-16">
+      <div className="mx-auto max-w-5xl px-5 pb-10 sm:px-8 sm:pb-12">
         <dl className="grid gap-px overflow-hidden rounded-card border border-line bg-line sm:grid-cols-3">
           {cv.facts.map((fact) => (
             <div key={fact.label} className="bg-surface px-5 py-4">
@@ -97,6 +93,10 @@ export default function Hero() {
             </div>
           ))}
         </dl>
+      </div>
+
+      <div className="mx-auto max-w-5xl px-5 pb-12 sm:px-8 sm:pb-16">
+        <AskBox />
       </div>
     </header>
   );
