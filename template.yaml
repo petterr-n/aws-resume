@@ -44,8 +44,14 @@ Parameters:
 
   PerVisitorHourly:
     Type: Number
-    Default: 5
-    Description: Questions one visitor may ask per hour. A courtesy limit.
+    Default: 20
+    Description: >
+      Questions one visitor may ask per hour. A courtesy limit, not a cost
+      control — the global daily cap is what bounds spend, so this can be
+      generous. It is keyed on IP address, which means everyone behind one NAT
+      shares a single allowance: a recruiter's whole office counts as one
+      visitor. 5/hour was too tight for that, and refusing a second colleague
+      mid-conversation is a worse outcome than the extra questions cost.
 
   GlobalDaily:
     Type: Number

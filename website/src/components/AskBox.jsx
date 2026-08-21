@@ -141,7 +141,7 @@ export default function AskBox() {
       </div>
 
       <p className="mt-3 font-mono text-[0.65rem] uppercase tracking-[0.12em] text-muted">
-        Claude Haiku 4.5 på Bedrock · 5 spørsmål per time
+        Claude Haiku 4.5 på Bedrock · begrenset antall spørsmål
       </p>
     </section>
   );
