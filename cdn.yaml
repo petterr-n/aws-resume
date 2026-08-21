@@ -44,15 +44,14 @@ Resources:
     UpdateReplacePolicy: Retain
     Properties:
       BucketName: !Ref SiteBucketName
-      # Currently all four are false on the live bucket. Turning them on is a
-      # deliberate follow-up change, applied AFTER the import succeeds — not
-      # part of the import itself. The OAC bucket policy is not evaluated as
-      # a public policy, so enabling these does not break CloudFront access.
+      # The OAC bucket policy grants a service principal with a SourceArn
+      # condition, which S3 does not evaluate as a public policy — so these
+      # guardrails can be on without breaking CloudFront's access.
       PublicAccessBlockConfiguration:
-        BlockPublicAcls: false
-        BlockPublicPolicy: false
-        IgnorePublicAcls: false
-        RestrictPublicBuckets: false
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
 
   SiteBucketPolicy:
     Type: AWS::S3::BucketPolicy
@@ -61,7 +60,7 @@ Resources:
     Properties:
       Bucket: !Ref SiteBucket
       PolicyDocument:
-        Version: '2008-10-17'
+        Version: '2012-10-17'
         Id: PolicyForCloudFrontPrivateContent
         Statement:
           - Sid: AllowCloudFrontServicePrincipal
@@ -86,8 +85,8 @@ Resources:
           - petter-rn.no
         DefaultRootObject: index.html
         PriceClass: PriceClass_All
-        HttpVersion: http1.1        # see IMPROVEMENTS below
-        IPV6Enabled: false          # see IMPROVEMENTS below
+        HttpVersion: http2and3
+        IPV6Enabled: true
 
         Origins:
           - Id: s3-origin-cloud-resume-challenge-petterr-n
@@ -102,10 +101,9 @@ Resources:
           AllowedMethods: [HEAD, GET]
           CachedMethods: [HEAD, GET]
           Compress: true
-          ForwardedValues:
-            QueryString: false
-            Cookies:
-              Forward: none
+          # Managed CachingOptimized. Replaces the deprecated ForwardedValues
+          # block, which CloudFront keeps only for backwards compatibility.
+          CachePolicyId: 658327ea-f89d-4fab-a63d-7e88639e58f6
 
         CustomErrorResponses:
           - ErrorCode: 403
@@ -120,25 +118,22 @@ Resources:
           SslSupportMethod: sni-only
           MinimumProtocolVersion: TLSv1.2_2021
 
-# NOTE: an import change set rejects any template containing Outputs
-# ("you cannot modify or add [Outputs]"). They are added in the first ordinary
-# stack update after the import completes, alongside the improvements below.
-#
-# Outputs:
-#   DistributionId:     !Ref Distribution
-#   DistributionDomain: !GetAtt Distribution.DomainName
-#   SiteBucket:         !Ref SiteBucket
+# Outputs could not be part of the import change set — CloudFormation rejects
+# any import template containing them. Added here in the first ordinary update.
+Outputs:
+  DistributionId:
+    Description: CloudFront distribution serving petter-rn.no.
+    Value: !Ref Distribution
 
-# IMPROVEMENTS to apply as normal stack updates once the import is verified:
-#
-#   HttpVersion: http2and3     currently http1.1 — measurably faster, free
-#   IPV6Enabled: true          currently off, free
-#   CachePolicyId              replace the deprecated ForwardedValues block
-#                              with the managed CachingOptimized policy
-#   PublicAccessBlock          set all four to true
-#   PriceClass_100             US/EU only; cheaper, though the free tier
-#                              already covers this site's volume
-#
-# And the Phase 2 change this whole import unblocks: a second origin pointing
-# at the HTTP API with an /api/* cache behaviour, which makes the API
-# same-origin and lets the CORS block come out of template.yaml.
+  DistributionDomain:
+    Value: !GetAtt Distribution.DomainName
+
+  SiteBucket:
+    Description: Frontend deploys sync the built site here.
+    Value: !Ref SiteBucket
+
+# Still deliberately unchanged:
+#   PriceClass_All   PriceClass_100 (US/EU only) would be cheaper in principle,
+#                    but CloudFront's free tier already covers this site's
+#                    volume entirely, so it would save nothing and would slow
+#                    the site down for anyone outside Europe and North America.

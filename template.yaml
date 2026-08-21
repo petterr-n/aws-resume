@@ -91,11 +91,26 @@ Resources:
         - DynamoDBCrudPolicy:
             TableName: !Ref VisitorTable
       Events:
+        # Two routes to the same function, on purpose and temporarily.
+        #
+        # CloudFront serves /api/* from this API with OriginPath /prod, so a
+        # browser request for petter-rn.no/api/visitor arrives here as
+        # /prod/api/visitor — hence the second route. Keeping the original
+        # /visitor route alive alongside it means the currently-deployed
+        # frontend keeps working while the CDN behaviour is added, so the
+        # switchover has no gap. GetVisitor is removed once the frontend is
+        # calling /api and the old path has stopped receiving traffic.
         GetVisitor:
           Type: HttpApi
           Properties:
             ApiId: !Ref HttpApi
             Path: /visitor
+            Method: GET
+        GetVisitorViaCdn:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Path: /api/visitor
             Method: GET
 
   # Without this, the log group is created with retention "never expire" and
