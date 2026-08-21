@@ -1,18 +1,15 @@
 /**
- * Base URL for the resume API.
+ * Base path for the resume API.
  *
- * Today the API is a separate host, so calls are cross-origin and the HTTP API
- * enforces an origin allowlist. Once the API is served from /api/* on the same
- * CloudFront distribution as this site, set VITE_API_BASE_URL to "/api" (or
- * change the fallback below) and the requests become same-origin — at which
- * point the CORS configuration in template.yaml can be deleted.
+ * CloudFront serves /api/* from the HTTP API origin, so requests go to the
+ * same origin as the site itself. Nothing is cross-origin, which means no
+ * preflights, no CORS headers, and API traffic counted under CloudFront's
+ * free tier rather than API Gateway's per-request price.
  *
- * Defined in one place so that switch is a one-line change rather than a
- * search for hardcoded hostnames.
+ * In development, vite.config.js proxies /api to the same API so this value
+ * works unchanged against `npm run dev`.
  */
-export const API_BASE =
-  import.meta.env.VITE_API_BASE_URL ??
-  "https://haianwilra.execute-api.eu-north-1.amazonaws.com/prod";
+export const API_BASE = import.meta.env.VITE_API_BASE_URL ?? "/api";
 
 export function apiUrl(path) {
   return `${API_BASE}${path}`;

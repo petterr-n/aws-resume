@@ -25,6 +25,13 @@ Parameters:
       must live in us-east-1 while this stack is in eu-north-1, so the resource
       cannot belong to this stack.
 
+  ApiOriginDomain:
+    Type: String
+    Default: haianwilra.execute-api.eu-north-1.amazonaws.com
+    Description: >
+      HTTP API hostname from the resume-app-stack ApiOriginDomain output.
+      Served under /api/* so the browser talks to one origin.
+
   OriginAccessControlId:
     Type: String
     Default: E13FF2VGWEMSJL
@@ -95,6 +102,17 @@ Resources:
             S3OriginConfig:
               OriginAccessIdentity: ''
 
+          - Id: api-origin
+            DomainName: !Ref ApiOriginDomain
+            # The API's routes live under the 'prod' stage, so CloudFront
+            # prepends it: a request for /api/visitor reaches the API as
+            # /prod/api/visitor, which is why template.yaml declares that route.
+            OriginPath: /prod
+            CustomOriginConfig:
+              OriginProtocolPolicy: https-only
+              HTTPSPort: 443
+              OriginSSLProtocols: [TLSv1.2]
+
         DefaultCacheBehavior:
           TargetOriginId: s3-origin-cloud-resume-challenge-petterr-n
           ViewerProtocolPolicy: redirect-to-https
@@ -104,6 +122,27 @@ Resources:
           # Managed CachingOptimized. Replaces the deprecated ForwardedValues
           # block, which CloudFront keeps only for backwards compatibility.
           CachePolicyId: 658327ea-f89d-4fab-a63d-7e88639e58f6
+
+        CacheBehaviors:
+          # This is what makes the API same-origin. With the browser calling
+          # petter-rn.no/api/* instead of a separate execute-api host, there is
+          # no cross-origin request left for CORS to govern, and API traffic
+          # falls under CloudFront's free tier rather than API Gateway's
+          # per-request price.
+          - PathPattern: /api/*
+            TargetOriginId: api-origin
+            ViewerProtocolPolicy: https-only
+            AllowedMethods: [GET, HEAD, OPTIONS]
+            CachedMethods: [GET, HEAD]
+            Compress: true
+            # CachingDisabled: the only endpoint today is the visitor counter,
+            # which increments per call and must never be served from cache.
+            # Cacheable endpoints get their own behaviour when they exist.
+            CachePolicyId: 4135ea2d-6df8-44a3-9df3-4b5a84be39ad
+            # AllViewerExceptHostHeader forwards the viewer's headers but
+            # strips Host. API Gateway rejects requests carrying a Host header
+            # that does not match its own domain.
+            OriginRequestPolicyId: b689b0a8-53d0-40ab-baf2-68738e2966ac
 
         CustomErrorResponses:
           - ErrorCode: 403
