@@ -115,9 +115,9 @@ jobs:
             --query 'Stacks[0].Outputs[?OutputKey==`ApiBaseUrl`].OutputValue' \
             --output text)
 
-          code=$(curl -s -o /tmp/body -w '%{http_code}' --max-time 20 "$BASE/visitor")
+          code=$(curl -s -o /tmp/body -w '%{http_code}' --max-time 20 "$BASE/api/visitor")
           body=$(cat /tmp/body)
-          echo "GET $BASE/visitor -> $code $body"
+          echo "GET $BASE/api/visitor -> $code $body"
 
           if [ "$code" != "200" ]; then
             echo "::error::Expected 200, got $code"
