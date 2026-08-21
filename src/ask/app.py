@@ -119,6 +119,27 @@ def visitor_id(event):
     return digest[:32]
 
 
+def _refund(key):
+    """Give back a claimed unit.
+
+    Quota exists to bound cost and stop abuse. A failure on our side is neither,
+    so a visitor should not lose one of their five questions because Bedrock was
+    unavailable — otherwise a bad minute burns everyone's allowance for the hour
+    and the whole day's global budget, while answering nothing.
+    """
+    try:
+        _limits.update_item(
+            Key={"pk": key},
+            UpdateExpression="SET #n = #n - :one",
+            ConditionExpression="#n > :zero",
+            ExpressionAttributeNames={"#n": "n"},
+            ExpressionAttributeValues={":one": 1, ":zero": 0},
+        )
+    except ClientError:
+        # Best effort. Failing to refund must not turn a 502 into a 500.
+        log.warning("could not refund %s", key)
+
+
 def _consume(key, limit, ttl_seconds):
     """Atomically claim one unit against a limit. False when it is used up.
 
@@ -169,7 +190,8 @@ def lambda_handler(event, context):
     # Global first: it is the limit that actually protects the bill, and
     # checking it first means a saturated day costs one conditional write
     # rather than two.
-    if not _consume(f"global#{day}", GLOBAL_DAILY, 172800):
+    global_key = f"global#{day}"
+    if not _consume(global_key, GLOBAL_DAILY, 172800):
         log.warning("global daily limit reached")
         return _response(
             429,
@@ -179,7 +201,11 @@ def lambda_handler(event, context):
             },
         )
 
-    if not _consume(f"visitor#{visitor_id(event)}#{hour}", PER_VISITOR_HOURLY, 7200):
+    visitor_key = f"visitor#{visitor_id(event)}#{hour}"
+    if not _consume(visitor_key, PER_VISITOR_HOURLY, 7200):
+        # The global unit was already claimed, so hand it back: this request
+        # will not cost anything to serve.
+        _refund(global_key)
         return _response(
             429,
             {
@@ -203,6 +229,8 @@ def lambda_handler(event, context):
         )
     except ClientError:
         log.exception("bedrock call failed")
+        _refund(global_key)
+        _refund(visitor_key)
         return _response(502, {"error": "Klarte ikke å svare akkurat nå."})
 
     answer = "".join(

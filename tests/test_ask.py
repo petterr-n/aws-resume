@@ -188,3 +188,39 @@ def test_bedrock_failure_is_502(ask):
 
     fake.converse = boom
     assert module.lambda_handler(request("Hei"), None)["statusCode"] == 502
+
+
+def test_failed_answer_does_not_cost_the_visitor_a_question(ask):
+    """Quota bounds cost and abuse. A failure on our side is neither.
+
+    Without this, a bad minute at the upstream burns every visitor's hourly
+    allowance and the whole day's global budget while answering nothing.
+    """
+    module, fake = ask
+
+    def boom(**kwargs):
+        from botocore.exceptions import ClientError
+
+        raise ClientError({"Error": {"Code": "ThrottlingException"}}, "Converse")
+
+    fake.converse = boom
+    for _ in range(4):
+        assert module.lambda_handler(request("Hei"), None)["statusCode"] == 502
+
+    # Four failures, yet the visitor's three questions are all still available.
+    fake.converse = FakeBedrock().converse
+    for _ in range(3):
+        assert module.lambda_handler(request("Hei"), None)["statusCode"] == 200
+
+
+def test_visitor_limit_does_not_consume_global_budget(ask):
+    """A rate-limited request costs nothing to serve, so it must not spend budget."""
+    module, _ = ask
+    for _ in range(3):
+        module.lambda_handler(request("Hei", address="203.0.113.7:1"), None)
+    for _ in range(3):
+        module.lambda_handler(request("Hei", address="203.0.113.7:1"), None)
+
+    table = boto3.resource("dynamodb", region_name="eu-north-1").Table(TABLE)
+    globals_ = [i for i in table.scan()["Items"] if i["pk"].startswith("global#")]
+    assert int(globals_[0]["n"]) == 3, "refused requests should not spend global budget"
