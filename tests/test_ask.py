@@ -224,3 +224,27 @@ def test_visitor_limit_does_not_consume_global_budget(ask):
     table = boto3.resource("dynamodb", region_name="eu-north-1").Table(TABLE)
     globals_ = [i for i in table.scan()["Items"] if i["pk"].startswith("global#")]
     assert int(globals_[0]["n"]) == 3, "refused requests should not spend global budget"
+
+
+def test_direct_calls_cannot_forge_an_identity_with_forwarded_for(ask):
+    """The execute-api hostname is public, so direct calls must be limited too.
+
+    Bypassing CloudFront means no CloudFront-Viewer-Address, and on a direct
+    call X-Forwarded-For is entirely client-supplied. If it were trusted, a
+    caller could mint a fresh allowance per request by varying the header.
+    sourceIp is the TCP peer as API Gateway sees it and cannot be forged.
+    """
+    module, _ = ask
+
+    def direct(xff):
+        return {
+            "headers": {"X-Forwarded-For": xff},  # no CloudFront-Viewer-Address
+            "requestContext": {"http": {"method": "POST", "sourceIp": "198.51.100.5"}},
+            "body": json.dumps({"question": "Hei"}),
+        }
+
+    for i in range(3):
+        assert module.lambda_handler(direct(f"10.0.0.{i}"), None)["statusCode"] == 200
+
+    # A fourth forged header, same real peer: refused.
+    assert module.lambda_handler(direct("10.0.0.250"), None)["statusCode"] == 429

@@ -2,7 +2,9 @@
 
 Increments a single DynamoDB item and returns the new total. The table name
 comes from the environment so nothing is pinned to a hand-created table, and
-the CORS headers that used to be written here now live on the HTTP API.
+the CORS headers this used to write by hand are gone entirely — the API
+is served from /api/* on the same origin as the site, so nothing is
+cross-origin.
 """
 
 import json

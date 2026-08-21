@@ -17,13 +17,15 @@ Parameters:
     Type: String
     Default: cloud-resume-challenge-petterr-n
 
-  CertificateArn:
+  CertificateId:
     Type: String
-    Default: arn:aws:acm:us-east-1:522783346722:certificate/f762271f-acb5-496f-9d5c-72a9e4fad02a
+    Default: f762271f-acb5-496f-9d5c-72a9e4fad02a
     Description: >
-      Passed as a parameter rather than managed here. CloudFront certificates
-      must live in us-east-1 while this stack is in eu-north-1, so the resource
-      cannot belong to this stack.
+      ACM certificate for petter-rn.no, referenced rather than managed here:
+      CloudFront certificates must live in us-east-1 while this stack is in
+      eu-north-1, so the resource cannot belong to it. Only the certificate id
+      is given; the account number is filled in at deploy time so it does not
+      appear in this public repository.
 
   ApiOriginDomain:
     Type: String
@@ -175,7 +177,7 @@ Resources:
             ResponsePagePath: /error.html
 
         ViewerCertificate:
-          AcmCertificateArn: !Ref CertificateArn
+          AcmCertificateArn: !Sub 'arn:aws:acm:us-east-1:${AWS::AccountId}:certificate/${CertificateId}'
           SslSupportMethod: sni-only
           MinimumProtocolVersion: TLSv1.2_2021
 
