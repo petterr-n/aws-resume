@@ -33,34 +33,6 @@ Parameters:
       ~1,440 invocations a month, comfortably inside Lambda's perpetual free
       tier. Neither feed changes faster than this.
 
-  AskModelId:
-    Type: String
-    Default: eu.anthropic.claude-haiku-4-5-20251001-v1:0
-    Description: >
-      Bedrock inference profile for the Q&A endpoint. Must be a profile id
-      (eu.* or global.*), not a bare model id — the bare id returns a
-      validation error for these models. Opus 5 is not enabled on this account;
-      enabling it in Bedrock > Model access makes this a one-line change.
-
-  PerVisitorHourly:
-    Type: Number
-    Default: 20
-    Description: >
-      Questions one visitor may ask per hour. A courtesy limit, not a cost
-      control — the global daily cap is what bounds spend, so this can be
-      generous. It is keyed on IP address, which means everyone behind one NAT
-      shares a single allowance: a recruiter's whole office counts as one
-      visitor. 5/hour was too tight for that, and refusing a second colleague
-      mid-conversation is a worse outcome than the extra questions cost.
-
-  GlobalDaily:
-    Type: Number
-    Default: 100
-    Description: >
-      Questions answered per day across all visitors. This is the real ceiling
-      on spend — a per-visitor limit does not bound cost, because addresses are
-      cheap and a determined caller has many.
-
   AlertEmail:
     Type: String
     Default: ''
@@ -70,6 +42,25 @@ Parameters:
 
 Conditions:
   HasAlertEmail: !Not [!Equals [!Ref AlertEmail, '']]
+
+# Deliberately plain values rather than template Parameters. `sam deploy`
+# carries a stack's previous parameter values forward for anything not
+# explicitly overridden, so changing a Parameter's Default has no effect on an
+# existing stack — the template would say one thing and the deployment do
+# another. As constants these are applied on every deploy, and git is an honest
+# record of what is running.
+#
+#   AskModelId       Bedrock inference profile. Must be a profile id (eu.* or
+#                    global.*): the bare model id is rejected for these models.
+#                    Opus 5 is not available on this account — a separate tier
+#                    restriction, not the use-case form.
+#
+#   PerVisitorHourly A courtesy limit, not a cost control. It is keyed on IP,
+#                    so everyone behind one NAT shares an allowance and a
+#                    recruiter's whole office counts as one visitor.
+#
+#   GlobalDaily      The real ceiling on spend. A per-visitor limit cannot
+#                    bound cost, because addresses are cheap.
 
 Globals:
   Function:
@@ -150,12 +141,12 @@ Resources:
       MemorySize: 512
       Environment:
         Variables:
-          MODEL_ID: !Ref AskModelId
+          MODEL_ID: eu.anthropic.claude-haiku-4-5-20251001-v1:0
           LIMITS_TABLE: !Ref AskLimitsTable
           SITE_BUCKET: !Ref SiteBucketName
           CV_KEY: cv.json
-          PER_VISITOR_HOURLY: !Ref PerVisitorHourly
-          GLOBAL_DAILY: !Ref GlobalDaily
+          PER_VISITOR_HOURLY: 20
+          GLOBAL_DAILY: 100
           # Per-stack salt for hashing visitor addresses. Never leaves the
           # account, and combined with a daily rotation it means stored keys
           # cannot be correlated across days or back to an address.
@@ -173,7 +164,7 @@ Resources:
             - Effect: Allow
               Action: bedrock:InvokeModel
               Resource:
-                - !Sub 'arn:aws:bedrock:${AWS::Region}:${AWS::AccountId}:inference-profile/${AskModelId}'
+                - !Sub 'arn:aws:bedrock:${AWS::Region}:${AWS::AccountId}:inference-profile/eu.anthropic.claude-haiku-4-5-20251001-v1:0'
                 - !Sub 'arn:aws:bedrock:*::foundation-model/*'
       Events:
         Ask:
@@ -324,7 +315,7 @@ Resources:
 Outputs:
   AskLimits:
     Description: Enforced question limits.
-    Value: !Sub '${PerVisitorHourly}/visitor/hour, ${GlobalDaily}/day total'
+    Value: '20/visitor/hour, 100/day total'
 
   ApiBaseUrl:
     Description: Base URL for the API. Becomes the CloudFront /api/* origin.
