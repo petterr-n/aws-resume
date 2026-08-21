@@ -82,8 +82,8 @@
       "title": "Om meg",
       "icon": "user",
       "paragraphs": [
-        "Jeg er 26 år gammel og kommer fra en liten plass som heter Stokmarknes i Nordland, Nord-Norge.",
-        "Er aktiv på fritiden, og interesserer meg for fotball og Formel 1. Liverpool er favorittlaget, også følger jeg mest med på Bodø/Glimt når det kommer til norsk fotball."
+        "Jeg er 27 år gammel og kommer fra en liten plass som heter Stokmarknes i Nordland, Nord-Norge.",
+        "Er aktiv på fritiden, og interesserer meg for fotball, Formel 1 og trening. Liverpool er favorittlaget, med Bodø/Glimt som neste i rekken."
       ]
     }
   ],
@@ -109,7 +109,7 @@
   ],
   "role": "Utvikler · Master i programvareutvikling",
   "location": "Bergen / Stokmarknes",
-  "intro": "Nyutdannet utvikler med master i programvareutvikling. Jobber bredt over frontend, backend og sky — sist med maskinsyn i oppdrettsnæringen. Denne siden kjører serverless på AWS, bygget og deployet fra GitHub Actions.",
+  "intro": "IT konsulent med master i programvareutvikling. Jobber med AI, backend og sky — Masterprosjekt med fokus på maskinsyn i oppdrettsnæringen. Denne siden kjører serverless på AWS, bygget og deployet fra GitHub Actions.",
   "links": [
     {
       "label": "GitHub",
