@@ -14,7 +14,7 @@
           "period": "2024 – 2026",
           "bullets": [
             "Fokus på moderne programvareutvikling, maskinsyn og AI.",
-            "Masterprosjekt: FishWatch – utviklet system for å detektere individuelle laks i merder og visualisere bevegelsesmønstre."
+            "Masteroppgave: «FishWatch – Automated Detection of Feeding Behavior in Atlantic Salmon Using Deep Learning and Motion Vector Analysis», publisert i Nasjonalt vitenarkiv (2026)."
           ]
         },
         {
@@ -97,14 +97,18 @@
     },
     {
       "id": "fish-watch",
-      "title": "Fish Watch",
+      "title": "FishWatch",
       "image": "computer-vision.svg",
-      "description": "Masteroppgave som omhandler maskinsyn og oppdrett.",
-      "link": null,
+      "description": "Maskinsyn for å måle fôringsatferd hos laks — YOLOv7, objektsporing og bevegelsesanalyse på ekte merdvideo.",
+      "link": "https://nva.sikt.no/registration/019fa8497b3d-bf9d6f4a-5460-4cd0-84ec-fc66852be712",
       "details": [
-        "Dette prosjektet er en masteroppgave som omhandler maskinsyn og oppdrett. Den fokuserer på å bruke computer vision for å overvåke fiskens helse og bevegelse i oppdrettsanlegg.",
-        "Det ble utviklet en løsning som kombinerer bildeanalyse og maskinlæring for å gi innsikt i fiskeatferd, med potensial for å redusere svinn og forbedre bærekraften i oppdrettsnæringen."
-      ]
+        "Fôr utgjør 40–50 % av produksjonskostnaden i lakseoppdrett, og fôringsbeslutninger tas fortsatt ved at operatører følger undervannskameraer manuelt. Oppgaven undersøker om bevegelsen til enkeltfisk kan måles automatisk og brukes til å si noe om når fisken spiser.",
+        "Systemet kombinerer en finjustert YOLOv7-detektor, flerobjektsporing med BoostTrack og en egenutviklet modul for bevegelsesvektorer. Det ble kjørt på tolv dager med video fra en aktiv laksemerd hos Nordlaks i Nord-Norge.",
+        "Gjennomsnittlig svømmehastighet økte 18 % og akselerasjon 19 % i fôringsvinduet sammenlignet med tiden før fôring, og mønsteret var konsistent på de fleste av dagene. Starten på fôringen er den tydeligste overgangen; når fôringsatferden avtar er vanskeligere å lese ut av bevegelsesdataene alene.",
+        "Pipelinen kjører på vanlig GPU-maskinvare koblet til eksisterende merdkamera. Resultatene gjelder én merd på ett anlegg — flere merder, årstider og kameraoppsett må til før noe slikt kan styre fôring automatisk."
+      ],
+      "subtitle": "Masteroppgave · Universitetet i Bergen, 2026",
+      "linkLabel": "Les oppgaven"
     }
   ],
   "role": "Utvikler · Master i programvareutvikling",

@@ -37,6 +37,10 @@ function Details({ project, onClose }) {
             <X size={17} />
           </button>
         </div>
+        {project.subtitle && (
+          <p className="mt-1 font-mono text-xs text-muted">{project.subtitle}</p>
+        )}
+
         <div className="mt-4 space-y-3">
           {project.details.map((paragraph) => (
             <p key={paragraph} className="text-[0.95rem] leading-relaxed text-ink-soft">
@@ -44,6 +48,18 @@ function Details({ project, onClose }) {
             </p>
           ))}
         </div>
+
+        {project.link && (
+          <a
+            href={project.link}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-5 inline-flex items-center gap-1.5 rounded-full bg-accent px-5 py-2.5 text-sm font-medium text-on-accent transition-colors duration-200 hover:bg-accent-hover"
+          >
+            {project.linkLabel ?? "Les mer"}
+            <ArrowUpRight size={15} strokeWidth={2} aria-hidden="true" />
+          </a>
+        )}
       </div>
     </div>
   );
@@ -66,6 +82,11 @@ function ProjectCard({ project }) {
         <h3 className="font-display text-xl font-semibold text-ink">
           {project.title}
         </h3>
+        {project.subtitle && (
+          <p className="mt-1 font-mono text-[0.68rem] uppercase tracking-[0.08em] text-muted">
+            {project.subtitle}
+          </p>
+        )}
         <p className="mt-2 flex-1 text-sm leading-relaxed text-ink-soft">
           {project.description}
         </p>
