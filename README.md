@@ -65,9 +65,11 @@ per-request price.
 | `resume-app-stack` | HTTP API, three Lambdas, two DynamoDB tables, alarms |
 | `resume-app-cdn` | Site bucket, bucket policy, CloudFront distribution |
 
-The CDN stack was **imported** rather than recreated — a CloudFront alias can
+The CDN stack was **imported** rather than recreated. A CloudFront alias can
 only be attached to one distribution at a time, so rebuilding would have meant
-taking the site down for nothing. See [IMPORTING.md](IMPORTING.md).
+releasing `petter-rn.no`, waiting out a new deployment and repointing DNS — with
+the site down throughout and nothing gained. A resource import adopts the
+existing resources in place instead, without modifying them.
 
 ---
 

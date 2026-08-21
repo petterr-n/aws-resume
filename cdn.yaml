@@ -10,7 +10,11 @@ Description: >
   IMPORTANT: on the initial import this template must describe the resources
   EXACTLY as they exist. Any difference is applied as a change on the next
   stack update, which is how an import turns into an outage. Property values
-  below were read from the live resources, not chosen. See IMPORTING.md.
+  below were read from the live resources, not chosen.
+
+  Note also that an import change set rejects any template containing Outputs,
+  and that AWS::S3::BucketPolicy does not support drift detection, so it will
+  not appear in a drift report.
 
 Parameters:
   SiteBucketName:
