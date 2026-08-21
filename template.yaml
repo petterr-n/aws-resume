@@ -143,6 +143,15 @@ Resources:
             - Effect: Allow
               Action: [s3:PutObject, s3:GetObject]
               Resource: !Sub 'arn:aws:s3:::${SiteBucketName}/data/*'
+            # Required so a missing object returns NoSuchKey rather than
+            # AccessDenied. Without s3:ListBucket, S3 refuses to confirm
+            # whether a key exists and returns 403 for both cases — which
+            # makes the first run, before results.json exists, indistinguishable
+            # from a genuine permissions failure. Grants key listing only; the
+            # object permissions above still limit reads and writes to data/.
+            - Effect: Allow
+              Action: s3:ListBucket
+              Resource: !Sub 'arn:aws:s3:::${SiteBucketName}'
         - SSMParameterReadPolicy:
             ParameterName: petter-rn/football-api-key
       Events:

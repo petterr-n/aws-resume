@@ -112,6 +112,10 @@ def read_previous():
         body = _s3.get_object(Bucket=BUCKET, Key=KEY)["Body"].read()
         return json.loads(body)
     except ClientError as exc:
+        # NoSuchKey requires s3:ListBucket on the bucket; without it S3 returns
+        # AccessDenied for a missing key instead, to avoid revealing whether it
+        # exists. The role grants ListBucket precisely so this stays honest and
+        # a real permissions problem is not silently swallowed here.
         if exc.response["Error"]["Code"] in ("NoSuchKey", "404"):
             return {}
         raise
