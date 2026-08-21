@@ -119,9 +119,9 @@ limits and the model id are plain values, applied on every deploy.
 ## Repository layout
 
 ```
-bootstrap/github-oidc.yaml   one-time: OIDC trust, deploy role, artifacts bucket
 template.yaml                API, Lambdas, tables, alarms
 cdn.yaml                     site bucket and CloudFront (imported)
+bootstrap/github-oidc.yaml   OIDC trust, deploy role, artifacts bucket
 src/visitor/                 visitor counter
 src/hydrator/                scheduled results publisher
 src/ask/                     CV question answering
@@ -132,30 +132,4 @@ website/                     React + Vite frontend
 
 `cv.json` is the content model: the site renders from it, and the build copies
 it to the site bucket so the ask Lambda reads the same file rather than a
-second copy that could drift.
-
----
-
-## Running it
-
-```bash
-# Frontend
-cd website && npm ci && npm run dev
-
-# Tests
-pip install -r requirements-dev.txt
-pytest
-cfn-lint template.yaml cdn.yaml bootstrap/github-oidc.yaml
-```
-
-Deploys happen on push to `main`: `.github/workflows/deploy-sam.yml` for the
-backend (tests → deploy → smoke test against the live endpoint) and
-`frontend.yml` for the site. The CDN stack is deployed manually, because the
-deploy role does not grant CloudFront permissions.
-
-## Cost
-
-Around **$1/month**, most of it the Route 53 hosted zone. CloudFront, Lambda
-and DynamoDB all sit inside perpetual free-tier allowances at this volume; the
-Q&A endpoint is the only variable cost and is capped by both the daily question
-limit and an AWS Budget.
+second copy that could drift out of step with it.
