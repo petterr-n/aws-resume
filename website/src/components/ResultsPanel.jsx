@@ -41,48 +41,49 @@ export default function ResultsPanel() {
   if (data && !f1 && !football) return null;
 
   return (
-    <div className="bg-slate-900 text-white rounded-2xl p-5 shadow-2xl">
-      <h3 className="text-lg font-bold mb-3 text-center">Siste resultater</h3>
+    <div className="rounded-card border border-line bg-surface p-5">
+      <h3 className="font-display text-lg font-semibold text-ink">Siste resultater</h3>
+      <p className="mb-4 font-mono text-[0.65rem] uppercase tracking-[0.13em] text-muted">Hentet av en Lambda på timer</p>
 
       <div className="mb-4">
-        <h4 className="text-sm font-semibold text-red-400 mb-1">Liverpool FC</h4>
+        <h4 className="text-sm font-semibold text-ember mb-1">Liverpool FC</h4>
         {!data ? (
-          <p className="text-gray-400 text-sm">Laster…</p>
+          <p className="text-sm text-muted">Laster…</p>
         ) : football ? (
           <>
-            <p className="text-sm">
+            <p className="text-sm text-ink">
               {football.home} {football.homeScore}–{football.awayScore}{" "}
               {football.away}
             </p>
             {data.fetchedAt?.football && (
-              <p className="text-xs text-gray-500 mt-0.5">
+              <p className="text-xs text-muted mt-0.5">
                 Oppdatert {relativeAge(data.fetchedAt.football)}
               </p>
             )}
           </>
         ) : (
-          <p className="text-gray-400 text-sm">Ingen kamper ennå.</p>
+          <p className="text-sm text-muted">Ingen kamper ennå.</p>
         )}
       </div>
 
       <div>
-        <h4 className="text-sm font-semibold text-orange-400 mb-1">Formel 1</h4>
+        <h4 className="text-sm font-semibold text-accent mb-1">Formel 1</h4>
         {!data ? (
-          <p className="text-gray-400 text-sm">Laster…</p>
+          <p className="text-sm text-muted">Laster…</p>
         ) : f1 ? (
           <>
-            <p className="text-sm">{f1.raceName}</p>
-            <p className="text-gray-300 text-sm">
+            <p className="text-sm text-ink">{f1.raceName}</p>
+            <p className="text-sm text-ink-soft">
               Vinner: <strong>{f1.winner}</strong> ({f1.team})
             </p>
             {data.fetchedAt?.f1 && (
-              <p className="text-xs text-gray-500 mt-0.5">
+              <p className="text-xs text-muted mt-0.5">
                 Oppdatert {relativeAge(data.fetchedAt.f1)}
               </p>
             )}
           </>
         ) : (
-          <p className="text-gray-400 text-sm">Ingen løp ennå.</p>
+          <p className="text-sm text-muted">Ingen løp ennå.</p>
         )}
       </div>
     </div>

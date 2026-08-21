@@ -1,8 +1,0 @@
-@import "tailwindcss";
-@import "flowbite/src/themes/default";
-
-/* Import Flowbite plugin */
-@plugin "flowbite/plugin";
-
-/* Add Flowbite’s source path */
-@source "../node_modules/flowbite";

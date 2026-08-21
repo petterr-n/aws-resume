@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { apiUrl } from "../api";
 
 export default function VisitorCounter() {
@@ -6,8 +6,8 @@ export default function VisitorCounter() {
   const [failed, setFailed] = useState(false);
 
   useEffect(() => {
-    // React 18+ StrictMode runs effects twice in development, which would
-    // double-count locally. The abort keeps the discarded run from landing.
+    // StrictMode runs effects twice in development; aborting the discarded run
+    // keeps it from double-counting locally.
     const controller = new AbortController();
 
     fetch(apiUrl("/visitor"), { signal: controller.signal })
@@ -23,14 +23,13 @@ export default function VisitorCounter() {
     return () => controller.abort();
   }, []);
 
-  // A broken counter should not announce itself on a CV. Render nothing until
-  // there is a real number, and nothing at all if the request failed.
+  // A broken counter should not announce itself on a CV.
   if (failed) return null;
 
   return (
-    <p className="text-sm text-slate-300 tabular-nums">
-      Besøkende:{" "}
-      <span className="font-semibold text-white">
+    <p className="font-mono text-xs text-muted">
+      Besøkende{" "}
+      <span className="font-medium tabular-nums text-ink">
         {count === null ? "…" : count.toLocaleString("nb-NO")}
       </span>
     </p>

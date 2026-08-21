@@ -1,0 +1,103 @@
+@import "tailwindcss";
+
+/* Dark is opt-in via data-theme on <html>, set before paint in index.html. */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+@theme {
+  /* Light: a cool off-white rather than a warm cream, and a blue-black ink
+     rather than pure black. Both are biased toward the teal accent so the
+     neutrals read as chosen rather than defaulted. */
+  --color-ground: #f6f9fa;
+  --color-surface: #ffffff;
+  --color-raised: #eef3f4;
+  --color-ink: #0e1f26;
+  --color-ink-soft: #3d545d;
+  --color-muted: #6b828b;
+  --color-line: #dde7e9;
+  --color-line-strong: #c3d3d6;
+
+  --color-accent: #0f6e7b;
+  --color-accent-hover: #0b555f;
+  --color-accent-wash: #e4f0f1;
+  /* Text drawn on top of the accent. The accent is dark in light mode and
+     light in dark mode, so this has to flip with it — a fixed white would be
+     unreadable on the dark theme's pale teal. */
+  --color-on-accent: #ffffff;
+
+  /* The one warm note. Used for emphasis, never for whole surfaces. */
+  --color-ember: #b4551f;
+
+  --font-display: "Newsreader", Georgia, "Times New Roman", serif;
+  --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+  --radius-card: 0.875rem;
+}
+
+[data-theme="dark"] {
+  --color-ground: #0b1a20;
+  --color-surface: #10262d;
+  --color-raised: #16323a;
+  --color-ink: #e4eef0;
+  --color-ink-soft: #b3c7cd;
+  --color-muted: #8aa3ab;
+  --color-line: #1f3d46;
+  --color-line-strong: #2b535e;
+
+  --color-accent: #4fbecb;
+  --color-accent-hover: #7ad2dc;
+  --color-accent-wash: #12333a;
+  --color-on-accent: #062229;
+
+  --color-ember: #e08a4e;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    /* Sticky nav must not cover the heading a jump-link lands on. */
+    scroll-padding-top: 5.5rem;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  body {
+    background-color: var(--color-ground);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3 { text-wrap: balance; }
+  p { text-wrap: pretty; }
+
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+}
+
+@layer utilities {
+  /* Fades sections in as they enter the viewport. Applied by an
+     IntersectionObserver rather than on scroll position, so it costs nothing
+     while idle. */
+  .reveal {
+    opacity: 0;
+    transform: translateY(14px);
+    transition: opacity 0.55s ease-out, transform 0.55s ease-out;
+  }
+  .reveal-in {
+    opacity: 1;
+    transform: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .reveal { opacity: 1; transform: none; }
+  }
+}

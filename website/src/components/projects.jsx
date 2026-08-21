@@ -1,46 +1,114 @@
-import Modal from "./modal";
+import { useState } from "react";
+import { ArrowUpRight, X } from "lucide-react";
+import { useReveal } from "../hooks/useReveal";
 import ResultsPanel from "./ResultsPanel";
 
-export default function ProjectSection({ projects }) {
-  return (
-    <section>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        {projects.map((project) => (
-          <div
-            key={project.id}
-            className="bg-slate-800 rounded-2xl shadow-lg overflow-hidden hover:scale-105 transform transition duration-300"
-          >
-            <img
-              src={project.image}
-              alt=""
-              className="w-full h-48 object-cover"
-            />
-            <div className="p-5">
-              <h3 className="text-xl font-semibold text-white">
-                {project.title}
-              </h3>
-              <p className="text-gray-300 text-sm mt-2">{project.description}</p>
+function Details({ project, onClose }) {
+  // Escape and backdrop-click both close. The previous modal had neither, so
+  // the close button was the only way out.
+  const onKeyDown = (e) => {
+    if (e.key === "Escape") onClose();
+  };
 
-              {project.details ? (
-                <Modal title={project.title} triggerText="Mer info">
-                  {project.details.map((paragraph) => (
-                    <p key={paragraph} className="mt-3 first:mt-0">
-                      {paragraph}
-                    </p>
-                  ))}
-                </Modal>
-              ) : (
-                <a
-                  href={project.link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-block mt-4 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
-                >
-                  Se prosjekt
-                </a>
-              )}
-            </div>
-          </div>
+  return (
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label={project.title}
+      onKeyDown={onKeyDown}
+      onClick={onClose}
+      className="fixed inset-0 z-50 flex items-end justify-center bg-ink/40 p-4 backdrop-blur-sm sm:items-center"
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="max-h-[85vh] w-full max-w-lg overflow-y-auto rounded-card border border-line bg-surface p-6 shadow-2xl"
+      >
+        <div className="flex items-start justify-between gap-4">
+          <h3 className="font-display text-2xl font-semibold text-ink">
+            {project.title}
+          </h3>
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Lukk"
+            autoFocus
+            className="flex h-8 w-8 flex-none items-center justify-center rounded-full text-muted hover:bg-raised hover:text-ink"
+          >
+            <X size={17} />
+          </button>
+        </div>
+        <div className="mt-4 space-y-3">
+          {project.details.map((paragraph) => (
+            <p key={paragraph} className="text-[0.95rem] leading-relaxed text-ink-soft">
+              {paragraph}
+            </p>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ProjectCard({ project }) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <article className="group flex flex-col overflow-hidden rounded-card border border-line bg-surface transition-colors duration-200 hover:border-accent">
+      <div className="flex h-32 items-center justify-center bg-raised">
+        <img
+          src={project.image}
+          alt=""
+          className="h-14 w-14 opacity-80 transition-transform duration-300 group-hover:scale-105"
+        />
+      </div>
+
+      <div className="flex flex-1 flex-col p-5">
+        <h3 className="font-display text-xl font-semibold text-ink">
+          {project.title}
+        </h3>
+        <p className="mt-2 flex-1 text-sm leading-relaxed text-ink-soft">
+          {project.description}
+        </p>
+
+        {project.details ? (
+          <>
+            <button
+              type="button"
+              onClick={() => setOpen(true)}
+              className="mt-4 inline-flex items-center gap-1 self-start text-sm font-medium text-accent hover:text-accent-hover"
+            >
+              Mer info
+              <ArrowUpRight size={15} strokeWidth={2} aria-hidden="true" />
+            </button>
+            {open && <Details project={project} onClose={() => setOpen(false)} />}
+          </>
+        ) : (
+          <a
+            href={project.link}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-4 inline-flex items-center gap-1 self-start text-sm font-medium text-accent hover:text-accent-hover"
+          >
+            Se prosjekt
+            <ArrowUpRight size={15} strokeWidth={2} aria-hidden="true" />
+          </a>
+        )}
+      </div>
+    </article>
+  );
+}
+
+export default function Projects({ projects }) {
+  const [ref, revealClass] = useReveal();
+
+  return (
+    <section id="prosjekter" ref={ref} className={`scroll-mt-24 ${revealClass}`}>
+      <h2 className="font-display text-2xl font-semibold tracking-tight text-ink sm:text-3xl">
+        Prosjekter
+      </h2>
+      <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        {projects.map((project) => (
+          <ProjectCard key={project.id} project={project} />
         ))}
         <ResultsPanel />
       </div>

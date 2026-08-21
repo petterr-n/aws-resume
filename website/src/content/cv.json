@@ -6,8 +6,7 @@
     {
       "id": "utdanning",
       "title": "Utdanning",
-      "icon": "student.svg",
-      "gradient": "bg-gradient-to-br from-gray-800 to-gray-700 border-gray-900",
+      "icon": "graduation",
       "entries": [
         {
           "heading": "Master i programvareutvikling",
@@ -32,8 +31,7 @@
     {
       "id": "egenskaper",
       "title": "Egenskaper",
-      "icon": "person-thinking.svg",
-      "gradient": "bg-gradient-to-br from-purple-900 to-purple-700 border-purple-900",
+      "icon": "spark",
       "paragraphs": [
         "Jeg trives godt i team og ser verdien av samarbeid for å finne gode løsninger, men jeg trives også med selvstendig arbeid som man virkelig må sette seg inn i.",
         "Jeg setter meg raskt inn i ny teknologi og motiveres av å møte på utfordringer som tvinger meg til å fortsette å tilegne meg kunnskap.",
@@ -43,8 +41,7 @@
     {
       "id": "erfaring",
       "title": "Erfaring",
-      "icon": "person-ability.svg",
-      "gradient": "bg-gradient-to-br from-blue-800 to-blue-700 border-blue-900",
+      "icon": "briefcase",
       "entries": [
         {
           "heading": "Nordlaks OT/IT – Utvikler",
@@ -83,8 +80,7 @@
     {
       "id": "om-meg",
       "title": "Om meg",
-      "icon": "person-wave.svg",
-      "gradient": "bg-gradient-to-br from-yellow-700 to-orange-700 border-yellow-700",
+      "icon": "user",
       "paragraphs": [
         "Jeg er 26 år gammel og kommer fra en liten plass som heter Stokmarknes i Nordland, Nord-Norge.",
         "Er aktiv på fritiden, og interesserer meg for fotball og Formel 1. Liverpool er favorittlaget, også følger jeg mest med på Bodø/Glimt når det kommer til norsk fotball."
@@ -109,6 +105,30 @@
         "Dette prosjektet er en masteroppgave som omhandler maskinsyn og oppdrett. Den fokuserer på å bruke computer vision for å overvåke fiskens helse og bevegelse i oppdrettsanlegg.",
         "Det ble utviklet en løsning som kombinerer bildeanalyse og maskinlæring for å gi innsikt i fiskeatferd, med potensial for å redusere svinn og forbedre bærekraften i oppdrettsnæringen."
       ]
+    }
+  ],
+  "role": "Utvikler · Master i programvareutvikling",
+  "location": "Bergen / Stokmarknes",
+  "intro": "Nyutdannet utvikler med master i programvareutvikling. Jobber bredt over frontend, backend og sky — sist med maskinsyn i oppdrettsnæringen. Denne siden kjører serverless på AWS, bygget og deployet fra GitHub Actions.",
+  "links": [
+    {
+      "label": "GitHub",
+      "href": "https://github.com/petterr-n",
+      "icon": "github"
+    }
+  ],
+  "facts": [
+    {
+      "label": "Utdanning",
+      "value": "M.Sc. programvareutvikling"
+    },
+    {
+      "label": "Sist",
+      "value": "Nordlaks OT/IT"
+    },
+    {
+      "label": "Fokus",
+      "value": "Sky, backend, maskinsyn"
     }
   ]
 }
