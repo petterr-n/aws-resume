@@ -42,6 +42,26 @@ Parameters:
 
 Resources:
 
+  # AllViewerExceptHostHeader forwards what the viewer sent, but the rate
+  # limiter needs CloudFront-Viewer-Address, which CloudFront generates and the
+  # client cannot forge. X-Forwarded-For is not a substitute: CloudFront
+  # appends to whatever the client supplied, so a caller can prepend any
+  # address they like and defeat a per-visitor limit keyed on it.
+  ApiOriginRequestPolicy:
+    Type: AWS::CloudFront::OriginRequestPolicy
+    Properties:
+      OriginRequestPolicyConfig:
+        Name: !Sub '${AWS::StackName}-api-origin'
+        Comment: Viewer headers except Host, plus the CloudFront-generated address.
+        CookiesConfig:
+          CookieBehavior: none
+        QueryStringsConfig:
+          QueryStringBehavior: all
+        HeadersConfig:
+          HeaderBehavior: allExcept
+          Headers:
+            - host
+
   # DeletionPolicy: Retain is mandatory on every resource in an import
   # operation. It also means deleting this stack detaches these resources
   # rather than destroying the site.
@@ -132,17 +152,19 @@ Resources:
           - PathPattern: /api/*
             TargetOriginId: api-origin
             ViewerProtocolPolicy: https-only
-            AllowedMethods: [GET, HEAD, OPTIONS]
+            # POST is required for /api/ask. CloudFront only accepts three
+            # method sets, so enabling POST means enabling the full set; the
+            # API itself still only routes the methods it declares.
+            AllowedMethods: [GET, HEAD, OPTIONS, PUT, POST, PATCH, DELETE]
             CachedMethods: [GET, HEAD]
             Compress: true
             # CachingDisabled: the only endpoint today is the visitor counter,
             # which increments per call and must never be served from cache.
             # Cacheable endpoints get their own behaviour when they exist.
             CachePolicyId: 4135ea2d-6df8-44a3-9df3-4b5a84be39ad
-            # AllViewerExceptHostHeader forwards the viewer's headers but
-            # strips Host. API Gateway rejects requests carrying a Host header
-            # that does not match its own domain.
-            OriginRequestPolicyId: b689b0a8-53d0-40ab-baf2-68738e2966ac
+            # Strips Host — API Gateway rejects a Host header that does not
+            # match its own domain — and adds CloudFront-Viewer-Address.
+            OriginRequestPolicyId: !Ref ApiOriginRequestPolicy
 
         CustomErrorResponses:
           - ErrorCode: 403

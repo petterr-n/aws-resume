@@ -33,6 +33,28 @@ Parameters:
       ~1,440 invocations a month, comfortably inside Lambda's perpetual free
       tier. Neither feed changes faster than this.
 
+  AskModelId:
+    Type: String
+    Default: eu.anthropic.claude-haiku-4-5-20251001-v1:0
+    Description: >
+      Bedrock inference profile for the Q&A endpoint. Must be a profile id
+      (eu.* or global.*), not a bare model id — the bare id returns a
+      validation error for these models. Opus 5 is not enabled on this account;
+      enabling it in Bedrock > Model access makes this a one-line change.
+
+  PerVisitorHourly:
+    Type: Number
+    Default: 5
+    Description: Questions one visitor may ask per hour. A courtesy limit.
+
+  GlobalDaily:
+    Type: Number
+    Default: 100
+    Description: >
+      Questions answered per day across all visitors. This is the real ceiling
+      on spend — a per-visitor limit does not bound cost, because addresses are
+      cheap and a determined caller has many.
+
   AlertEmail:
     Type: String
     Default: ''
@@ -91,6 +113,75 @@ Resources:
       KeySchema:
         - AttributeName: id
           KeyType: HASH
+
+  ### Q&A over the CV ###################################################
+
+  # Rate-limit counters only. Separate from the visitor table so enabling TTL
+  # here cannot expire the visitor count, and so the two concerns stay legible.
+  AskLimitsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: pk
+          AttributeType: S
+      KeySchema:
+        - AttributeName: pk
+          KeyType: HASH
+      # Counters are worthless once their window closes. TTL deletes are free,
+      # unlike ordinary deletes, so expiry costs nothing.
+      TimeToLiveSpecification:
+        AttributeName: expiresAt
+        Enabled: true
+
+  AskFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/ask/
+      Handler: app.lambda_handler
+      Description: Answers questions about the CV, grounded in cv.json.
+      Timeout: 30
+      MemorySize: 512
+      Environment:
+        Variables:
+          MODEL_ID: !Ref AskModelId
+          LIMITS_TABLE: !Ref AskLimitsTable
+          SITE_BUCKET: !Ref SiteBucketName
+          CV_KEY: cv.json
+          PER_VISITOR_HOURLY: !Ref PerVisitorHourly
+          GLOBAL_DAILY: !Ref GlobalDaily
+          # Per-stack salt for hashing visitor addresses. Never leaves the
+          # account, and combined with a daily rotation it means stored keys
+          # cannot be correlated across days or back to an address.
+          HASH_SALT: !Ref AWS::StackId
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref AskLimitsTable
+        - Statement:
+            - Effect: Allow
+              Action: s3:GetObject
+              Resource: !Sub 'arn:aws:s3:::${SiteBucketName}/cv.json'
+            # Scoped to the one model this function may call. Without the
+            # resource constraint a bug or an injected model id could invoke
+            # anything in Bedrock, at any price.
+            - Effect: Allow
+              Action: bedrock:InvokeModel
+              Resource:
+                - !Sub 'arn:aws:bedrock:${AWS::Region}:${AWS::AccountId}:inference-profile/${AskModelId}'
+                - !Sub 'arn:aws:bedrock:*::foundation-model/*'
+      Events:
+        Ask:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Path: /api/ask
+            Method: POST
+
+  AskLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/aws/lambda/${AskFunction}'
+      RetentionInDays: 30
 
   ### Function ##########################################################
 
@@ -225,6 +316,10 @@ Resources:
           Value: !Ref HttpApi
 
 Outputs:
+  AskLimits:
+    Description: Enforced question limits.
+    Value: !Sub '${PerVisitorHourly}/visitor/hour, ${GlobalDaily}/day total'
+
   ApiBaseUrl:
     Description: Base URL for the API. Becomes the CloudFront /api/* origin.
     Value: !Sub 'https://${HttpApi}.execute-api.${AWS::Region}.amazonaws.com/prod'
