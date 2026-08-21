@@ -7,6 +7,32 @@ Description: >
   redeployed from scratch.
 
 Parameters:
+  SiteBucketName:
+    Type: String
+    Default: cloud-resume-challenge-petterr-n
+    Description: >
+      Bucket CloudFront serves the site from. The hydrator publishes
+      data/results.json here so the browser reads it straight from the CDN.
+      Passed as a parameter rather than imported from the CDN stack, so the two
+      stacks stay independently deletable.
+
+  FootballApiKeyParameter:
+    Type: String
+    Default: /petter-rn/football-api-key
+    Description: >
+      SSM SecureString holding the football-data.org key. Read at runtime, not
+      injected as an environment variable: CloudFormation cannot resolve
+      ssm-secure into Lambda env vars, and this keeps the secret out of the
+      function configuration and rotatable without a redeploy. If the parameter
+      does not exist, the hydrator skips football and still publishes F1.
+
+  HydrationSchedule:
+    Type: String
+    Default: rate(30 minutes)
+    Description: >
+      ~1,440 invocations a month, comfortably inside Lambda's perpetual free
+      tier. Neither feed changes faster than this.
+
   AlertEmail:
     Type: String
     Default: ''
@@ -93,6 +119,45 @@ Resources:
             Path: /api/visitor
             Method: GET
 
+  ### Hydrator #########################################################
+
+  # Reads the upstream feeds on a timer and publishes a static JSON file the
+  # CDN serves. Nothing invokes a Lambda to read this data.
+  HydratorFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/hydrator/
+      Handler: app.lambda_handler
+      Description: Publishes F1 and football results to the site bucket on a schedule.
+      Timeout: 30
+      Environment:
+        Variables:
+          SITE_BUCKET: !Ref SiteBucketName
+          RESULTS_KEY: data/results.json
+          FOOTBALL_API_KEY_PARAMETER: !Ref FootballApiKeyParameter
+      Policies:
+        # Write access to one prefix of one bucket — not the bucket, and
+        # certainly not S3. Reading is needed too, to retain the previous
+        # value when a feed is unreachable.
+        - Statement:
+            - Effect: Allow
+              Action: [s3:PutObject, s3:GetObject]
+              Resource: !Sub 'arn:aws:s3:::${SiteBucketName}/data/*'
+        - SSMParameterReadPolicy:
+            ParameterName: petter-rn/football-api-key
+      Events:
+        Tick:
+          Type: ScheduleV2
+          Properties:
+            ScheduleExpression: !Ref HydrationSchedule
+            Description: Refresh the published results file.
+
+  HydratorLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/aws/lambda/${HydratorFunction}'
+      RetentionInDays: 30
+
   # Without this, the log group is created with retention "never expire" and
   # CloudWatch storage grows forever.
   VisitorLogGroup:
@@ -162,3 +227,7 @@ Outputs:
   VisitorTableName:
     Description: Generated table name. Nothing hardcodes this.
     Value: !Ref VisitorTable
+
+  ResultsUrl:
+    Description: Where the frontend reads the hydrated results from.
+    Value: https://petter-rn.no/data/results.json

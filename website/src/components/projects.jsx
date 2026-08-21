@@ -1,9 +1,10 @@
 import Modal from "./modal";
+import ResultsPanel from "./ResultsPanel";
 
 export default function ProjectSection({ projects }) {
   return (
     <section>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         {projects.map((project) => (
           <div
             key={project.id}
@@ -41,6 +42,7 @@ export default function ProjectSection({ projects }) {
             </div>
           </div>
         ))}
+        <ResultsPanel />
       </div>
     </section>
   );
