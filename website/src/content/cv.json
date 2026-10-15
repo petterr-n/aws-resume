@@ -57,7 +57,8 @@
           "bullets": [
             "Frontendutvikling med React, Tailwind CSS, HTML, Javascript, med mer.",
             "Backendutvikling med Java, Kotlin, Python, Rest API, Messenger-services, Postgres, MongoDB, SQL, Spring-Boot, Django, med mer.",
-            "Skyutvikling med AWS services som Lambda, DynamoDB, CloudFront, SAM, IaC, med mer."
+            "Skyutvikling med AWS services som Lambda, DynamoDB, CloudFront, SAM, IaC, med mer.",
+            "Data engineering på Databricks med Lakeflow-pipelines, Spark SQL, PySpark, medaljongarkitektur (bronze/silver/gold), stjerneskjema og automatisert datakvalitet."
           ]
         },
         {
@@ -109,6 +110,21 @@
       ],
       "subtitle": "Masteroppgave · Universitetet i Bergen, 2026",
       "linkLabel": "Les oppgaven"
+    },
+    {
+      "id": "f1-lakehouse",
+      "title": "F1 Lakehouse",
+      "image": "race-flag.svg",
+      "description": "Dataplattform på Databricks som henter Formel 1-data, bygger bronze/silver/gold-tabeller og publiserer resultater og mesterskapsstilling hver uke.",
+      "link": "https://petterr-n.github.io/f1-lakehouse/",
+      "details": [
+        "En ukentlig jobb på Databricks henter nye økter fra OpenF1-API-et hver mandag etter et løpshelg, kjører pipelinen, validerer dataene og eksporterer løps- og kvalifiseringsresultater og mesterskapsstillingen til en statisk nettside på GitHub Pages.",
+        "Bronze-, silver- og gold-lagene er én Lakeflow-pipeline skrevet i SQL. Gold-laget er et stjerneskjema med fakta- og dimensjonstabeller, der førertabellen er SCD type 2 slik at poeng havner hos laget føreren faktisk kjørte for i hvert løp.",
+        "Datakvalitet sjekkes på to nivåer: forventninger i pipelinen som enten stopper kjøringen, dropper rader eller teller avvik, og en egen valideringsnotebook som blant annet sjekker én vinner per løp, at ingen rader forsvinner mellom lagene og at sluttstillingen for 2025 stemmer med den offisielle. Feiler valideringen, beholder siden forrige ukes data.",
+        "Infrastrukturen er definert som Databricks Asset Bundles med dev- og prod-miljø. GitHub Actions kjører tester og validerer bundelen på pull requests, og deployer til prod ved merge til main. Nettsiden er bygget med Vite og TypeScript."
+      ],
+      "subtitle": "Databricks · Lakeflow · SQL · Python",
+      "linkLabel": "Se resultatsiden"
     }
   ],
   "role": "Utvikler · Master i programvareutvikling",
@@ -132,7 +148,7 @@
     },
     {
       "label": "Fokus",
-      "value": "Sky, backend, maskinsyn"
+      "value": "Sky, backend, data, maskinsyn"
     }
   ]
 }
