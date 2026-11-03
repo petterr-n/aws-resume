@@ -127,7 +127,8 @@ bootstrap/github-oidc.yaml   OIDC trust, deploy role, artifacts bucket
 src/visitor/                 visitor counter
 src/hydrator/                scheduled results publisher
 src/ask/                     CV question answering
-tests/                       31 tests against mocked AWS
+tests/                       36 tests against mocked AWS
+evals/                       behavioural eval of the ask prompt, against real Bedrock
 website/                     React + Vite frontend
   src/content/cv.json          single source of truth for CV content
 ```
