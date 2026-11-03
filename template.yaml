@@ -160,12 +160,15 @@ Resources:
               Resource: !Sub 'arn:aws:s3:::${SiteBucketName}/cv.json'
             # Scoped to the one model this function may call. Without the
             # resource constraint a bug or an injected model id could invoke
-            # anything in Bedrock, at any price.
+            # anything in Bedrock, at any price. The foundation-model ARN is
+            # needed as well because the eu.* profile routes each request to
+            # that model in whichever EU region has capacity — hence the region
+            # wildcard, but only for this one model.
             - Effect: Allow
               Action: bedrock:InvokeModel
               Resource:
                 - !Sub 'arn:aws:bedrock:${AWS::Region}:${AWS::AccountId}:inference-profile/eu.anthropic.claude-haiku-4-5-20251001-v1:0'
-                - !Sub 'arn:aws:bedrock:*::foundation-model/*'
+                - 'arn:aws:bedrock:*::foundation-model/anthropic.claude-haiku-4-5-20251001-v1:0'
       Events:
         Ask:
           Type: HttpApi
